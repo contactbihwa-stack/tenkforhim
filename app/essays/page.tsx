@@ -1,10 +1,8 @@
-export const dynamic = 'force-dynamic';
-
 "use client"
-import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import Navbar from "@/components/Navbar"
-import Starfield from "@/lib/starfield"
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Navbar from '@/components/Navbar';
+import Starfield from '@/lib/starfield';
 
 const essays = [
   {
