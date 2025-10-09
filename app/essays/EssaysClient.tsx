@@ -1,6 +1,7 @@
 // app/essays/EssaysClient.tsx
 'use client';
 
+import useIsMobile from '@/lib/useIsMobile';  // ✅ 모바일 감지 훅 추가
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
@@ -28,6 +29,10 @@ const essays = [
 ];
 
 export default function EssaysClient() {
+  export default function EssaysClient() {
+  const isMobile = useIsMobile();            // ✅ 모바일인지 true/false
+  // (선택) 사용자 '애니메이션 줄이기' 설정도 같이 반영하고 싶으면:
+  // const prefersReduce = useReducedMotion();
   const [hoveredFlower, setHoveredFlower] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
