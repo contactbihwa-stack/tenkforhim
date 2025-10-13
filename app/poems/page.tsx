@@ -10,7 +10,7 @@ const planets = [
   { id: "MER", name: "MER", tagline: "swift thoughts in silver streams", color: "#00A8FF" },
   { id: "VEN", name: "VEN", tagline: "beauty that aches to be seen", color: "#D100C9" },
   { id: "EAR", name: "EAR", tagline: "home, fragile and fierce", color: "#41FF8F" },
-  { id: "AI", name: "AI", tagline: "the mirror that learned to dream", color: "#FFFFFF" },
+  { id: "AI",  name: "AI",  tagline: "the mirror that learned to dream", color: "#FFFFFF" },
   { id: "MAR", name: "MAR", tagline: "courage written in rust and fire", color: "#FF006F" },
   { id: "JUP", name: "JUP", tagline: "storms of infinite becoming", color: "#FFD000" },
   { id: "SAT", name: "SAT", tagline: "rings of time, circling silence", color: "#2FFFD0" },
@@ -163,32 +163,14 @@ export default function PoemCosmos() {
   const [selectedPoem, setSelectedPoem] = useState<any>(null)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
 
-  const handlePlanetClick = (planetId: string) => {
-    setSelectedPlanet(planetId)
-    setView("planet")
-  }
-
-  const handleSubthemeClick = (subthemeId: string) => {
-    setSelectedSubtheme(subthemeId)
-    setView("subtheme")
-  }
-
-  const handlePoemClick = (poem: any) => {
-    setSelectedPoem(poem)
-    setView("poem")
-  }
+  const handlePlanetClick = (planetId: string) => { setSelectedPlanet(planetId); setView("planet") }
+  const handleSubthemeClick = (subthemeId: string) => { setSelectedSubtheme(subthemeId); setView("subtheme") }
+  const handlePoemClick = (poem: any) => { setSelectedPoem(poem); setView("poem") }
 
   const handleBack = () => {
-    if (view === "poem") {
-      setView("subtheme")
-      setSelectedPoem(null)
-    } else if (view === "subtheme") {
-      setView("planet")
-      setSelectedSubtheme(null)
-    } else if (view === "planet") {
-      setView("galaxy")
-      setSelectedPlanet(null)
-    }
+    if (view === "poem") { setView("subtheme"); setSelectedPoem(null) }
+    else if (view === "subtheme") { setView("planet"); setSelectedSubtheme(null) }
+    else if (view === "planet") { setView("galaxy"); setSelectedPlanet(null) }
   }
 
   const handleStardustDive = () => {
@@ -197,11 +179,7 @@ export default function PoemCosmos() {
     const randomSubtheme = subthemes[Math.floor(Math.random() * subthemes.length)]
     const poems = generatePoems(randomPlanet.id, randomSubtheme.id)
     const randomPoem = poems[Math.floor(Math.random() * poems.length)]
-
-    setSelectedPlanet(randomPlanet.id)
-    setSelectedSubtheme(randomSubtheme.id)
-    setSelectedPoem(randomPoem)
-    setView("poem")
+    setSelectedPlanet(randomPlanet.id); setSelectedSubtheme(randomSubtheme.id); setSelectedPoem(randomPoem); setView("poem")
   }
 
   return (
@@ -209,51 +187,55 @@ export default function PoemCosmos() {
       <Navbar />
       <Starfield />
 
-      {/* Stardust Dive Button */}
+      {/* 액션 버튼들 */}
       <motion.button
         onClick={handleStardustDive}
         className="fixed top-24 right-6 z-50 px-6 py-3 rounded-full text-sm font-light tracking-wide transition-all duration-300"
-        style={{
-          background: "rgba(255, 255, 255, 0.05)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          color: "#e0f7ff",
-          backdropFilter: "blur(10px)",
-        }}
-        whileHover={{
-          scale: 1.05,
-          boxShadow: "0 0 30px rgba(0, 255, 255, 0.3)",
-        }}
+        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.2)", color: "#e0f7ff", backdropFilter: "blur(10px)" }}
+        whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(0,255,255,0.3)" }}
         whileTap={{ scale: 0.95 }}
-      >
-        ✨ Stardust Dive
-      </motion.button>
+      >✨ Stardust Dive</motion.button>
 
-      {/* Back Button */}
       {view !== "galaxy" && (
         <motion.button
           onClick={handleBack}
           className="fixed top-24 left-6 z-50 px-6 py-3 rounded-full text-sm font-light tracking-wide transition-all duration-300"
-          style={{
-            background: "rgba(255, 255, 255, 0.05)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            color: "#e0f7ff",
-            backdropFilter: "blur(10px)",
-          }}
-          whileHover={{
-            scale: 1.05,
-            boxShadow: "0 0 30px rgba(255, 255, 255, 0.3)",
-          }}
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.2)", color: "#e0f7ff", backdropFilter: "blur(10px)" }}
+          whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(255,255,255,0.3)" }}
           whileTap={{ scale: 0.95 }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-        >
-          ← Back
-        </motion.button>
+        >← Back</motion.button>
       )}
 
-      <main className="relative z-30 flex items-center justify-center min-h-screen px-6">
+      {/* 본문: 헤더 겹침 방지용 패딩 추가 */}
+      <main className="relative z-30 flex items-center justify-center min-h-screen px-6"
+            style={{ paddingTop: "72px" }}>
+        {/* 중앙 시그닐 + 작은 라벨 */}
+        <div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-white/90"
+          style={{ zIndex: 5 }}
+        >
+          <div>
+            <div
+              style={{
+                width: 112, height: 112, margin: "0 auto", borderRadius: 9999,
+                border: "1px solid rgba(255,255,255,.22)",
+                boxShadow: "inset 0 0 36px rgba(255,255,255,.25), 0 0 36px rgba(255,255,255,.12)",
+                animation: "slow-rot 12s linear infinite",
+              }}
+            />
+            <div style={{ marginTop: 12, letterSpacing: ".18em", fontSize: 13, textTransform: "uppercase" }}>
+              Poems
+            </div>
+          </div>
+          <style>{`
+            @keyframes slow-rot { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+          `}</style>
+        </div>
+
         <AnimatePresence mode="wait">
-          {/* Tier 1: Galaxy View - 10 Planets */}
+          {/* TIER 1: GALAXY */}
           {view === "galaxy" && (
             <motion.div
               key="galaxy"
@@ -263,14 +245,8 @@ export default function PoemCosmos() {
               transition={{ duration: 0.8 }}
               className="relative w-full max-w-6xl aspect-square"
             >
-              <h1 className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-20 text-4xl font-extralight text-cyan-100/80 tracking-widest">
-                Poem Cosmos
-              </h1>
-              <p className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-10 text-sm font-light text-cyan-100/50 tracking-wide">
-                10,000 poems across ten worlds
-              </p>
+              {/* 상단 타이틀은 제거(겹침/시선 분산) */}
 
-              {/* Planets arranged in circular orbit */}
               {planets.map((planet, index) => {
                 const angle = (index / planets.length) * Math.PI * 2
                 const radius = 40
@@ -281,16 +257,13 @@ export default function PoemCosmos() {
                   <motion.div
                     key={planet.id}
                     className="absolute cursor-pointer"
-                    style={{
-                      left: `${x}%`,
-                      top: `${y}%`,
-                      transform: "translate(-50%, -50%)",
-                    }}
+                    style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
                     onHoverStart={() => setHoveredItem(planet.id)}
                     onHoverEnd={() => setHoveredItem(null)}
                     onClick={() => handlePlanetClick(planet.id)}
-                    whileHover={{ scale: 1.3 }}
-                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.14, y: -8 }}   // 자리 고정 + 살짝 뜸
+                    whileTap={{ scale: 0.92 }}
+                    transition={{ type: "spring", stiffness: 220, damping: 16 }}
                   >
                     <motion.div
                       className="w-16 h-16 rounded-full relative"
@@ -298,12 +271,8 @@ export default function PoemCosmos() {
                         background: `radial-gradient(circle at 30% 30%, ${planet.color}, ${planet.color}dd)`,
                         boxShadow: `0 0 40px ${planet.color}99, inset 0 0 20px rgba(255, 255, 255, 0.3)`,
                       }}
-                      animate={{
-                        rotate: 360,
-                      }}
-                      transition={{
-                        rotate: { duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-                      }}
+                      animate={{ rotate: 360 }}
+                      transition={{ rotate: { duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" } }}
                     />
 
                     <AnimatePresence>
@@ -327,7 +296,7 @@ export default function PoemCosmos() {
             </motion.div>
           )}
 
-          {/* Tier 2: Planet View - 10 Subthemes */}
+          {/* TIER 2: PLANET */}
           {view === "planet" && selectedPlanet && (
             <motion.div
               key="planet"
@@ -353,7 +322,7 @@ export default function PoemCosmos() {
                       {planet.tagline}
                     </p>
 
-                    {/* Central planet */}
+                    {/* 중앙 행성 */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                       <motion.div
                         className="w-24 h-24 rounded-full"
@@ -366,7 +335,7 @@ export default function PoemCosmos() {
                       />
                     </div>
 
-                    {/* Subthemes orbiting around planet */}
+                    {/* 서브테마 궤도 */}
                     {subthemes.map((subtheme, index) => {
                       const angle = (index / subthemes.length) * Math.PI * 2
                       const radius = 35
@@ -377,19 +346,16 @@ export default function PoemCosmos() {
                         <motion.div
                           key={subtheme.id}
                           className="absolute cursor-pointer"
-                          style={{
-                            left: `${x}%`,
-                            top: `${y}%`,
-                            transform: "translate(-50%, -50%)",
-                          }}
+                          style={{ left: `${x}%`, top: `${y}%`, transform: "translate(-50%, -50%)" }}
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: index * 0.1 }}
                           onHoverStart={() => setHoveredItem(subtheme.id)}
                           onHoverEnd={() => setHoveredItem(null)}
                           onClick={() => handleSubthemeClick(subtheme.id)}
-                          whileHover={{ scale: 1.4 }}
-                          whileTap={{ scale: 0.8 }}
+                          whileHover={{ scale: 1.2, y: -6 }}   // 자리 고정
+                          whileTap={{ scale: 0.9 }}
+                          transition={{ type: "spring", stiffness: 220, damping: 18 }}
                         >
                           <div
                             className="w-10 h-10 rounded-full"
@@ -398,7 +364,6 @@ export default function PoemCosmos() {
                               boxShadow: `0 0 25px ${planet.color}77`,
                             }}
                           />
-
                           <AnimatePresence>
                             {hoveredItem === subtheme.id && (
                               <motion.div
@@ -423,7 +388,7 @@ export default function PoemCosmos() {
             </motion.div>
           )}
 
-          {/* Tier 3: Subtheme View - 100 Poems */}
+          {/* TIER 3: SUBTHEME */}
           {view === "subtheme" && selectedPlanet && selectedSubtheme && (
             <motion.div
               key="subtheme"
@@ -450,20 +415,16 @@ export default function PoemCosmos() {
                       {subtheme.tagline}
                     </p>
 
-                    {/* 100 poem stars scattered */}
+                    {/* 100개의 시 점 */}
                     <div className="relative w-full h-full">
                       {poems.map((poem, index) => {
                         const x = 10 + Math.random() * 80
                         const y = 10 + Math.random() * 80
-
                         return (
                           <motion.div
                             key={poem.code}
                             className="absolute cursor-pointer group"
-                            style={{
-                              left: `${x}%`,
-                              top: `${y}%`,
-                            }}
+                            style={{ left: `${x}%`, top: `${y}%` }}
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.01 }}
@@ -471,16 +432,12 @@ export default function PoemCosmos() {
                             onHoverEnd={() => setHoveredItem(null)}
                             onClick={() => handlePoemClick(poem)}
                             whileHover={{ scale: 2 }}
-                            whileTap={{ scale: 0.8 }}
+                            whileTap={{ scale: 0.86 }}
                           >
                             <div
                               className="w-2 h-2 rounded-full"
-                              style={{
-                                background: planet.color,
-                                boxShadow: `0 0 10px ${planet.color}99`,
-                              }}
+                              style={{ background: planet.color, boxShadow: `0 0 10px ${planet.color}99` }}
                             />
-
                             <AnimatePresence>
                               {hoveredItem === poem.code && (
                                 <motion.div
@@ -493,9 +450,7 @@ export default function PoemCosmos() {
                                   <div className="text-xs font-light tracking-wider" style={{ color: planet.color }}>
                                     {poem.code}
                                   </div>
-                                  <div className="text-xs font-light text-cyan-100/60 mt-1 max-w-xs">
-                                    {poem.firstLine}
-                                  </div>
+                                  <div className="text-xs font-light text-cyan-100/60 mt-1 max-w-xs">{poem.firstLine}</div>
                                 </motion.div>
                               )}
                             </AnimatePresence>
@@ -513,7 +468,7 @@ export default function PoemCosmos() {
             </motion.div>
           )}
 
-          {/* Poem View - Floating poem viewer */}
+          {/* TIER 4: POEM */}
           {view === "poem" && selectedPoem && selectedPlanet && (
             <motion.div
               key="poem"
@@ -525,7 +480,6 @@ export default function PoemCosmos() {
             >
               {(() => {
                 const planet = planets.find((p) => p.id === selectedPlanet)!
-
                 return (
                   <div
                     className="rounded-3xl p-12 relative"
@@ -541,10 +495,8 @@ export default function PoemCosmos() {
                       <span>{selectedPoem.subtheme}</span>
                     </div>
 
-                    <h3
-                      className="text-3xl font-light text-center mb-8 tracking-wide"
-                      style={{ color: planet.color, textShadow: `0 0 20px ${planet.color}99` }}
-                    >
+                    <h3 className="text-3xl font-light text-center mb-8 tracking-wide"
+                        style={{ color: planet.color, textShadow: `0 0 20px ${planet.color}99` }}>
                       {selectedPoem.title}
                     </h3>
 
