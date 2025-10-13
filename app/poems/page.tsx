@@ -245,28 +245,29 @@ export default function PoemCosmos() {
       {/* 본문(헤더 넘치지 않게 상단 패딩) */}
       <main className="relative z-30 flex items-center justify-center min-h-screen px-6" style={{ paddingTop: "72px" }}>
         {/* 극장형 중앙: 클릭 시 라이브러리로 */}
-        {view === "galaxy" && (
-          <div className="absolute inset-0 flex items-center justify-center text-center text-white/90 z-10">
-            <div>
-              <motion.button
-                onClick={() => setView("library")}
-                className="mx-auto rounded-full focus:outline-none"
-                style={{
-                  width: 132, height: 132,
-                  border: "1px solid rgba(255,255,255,.22)",
-                  boxShadow: "inset 0 0 36px rgba(255,255,255,.18), 0 0 36px rgba(255,255,255,.12)",
-                  background: "radial-gradient(circle at 40% 35%, rgba(255,255,255,.12), rgba(255,255,255,.04))",
-                  backdropFilter: "blur(6px)",
-                }}
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.98 }}
-                aria-label="Open poems library"
-              />
-              <div className="mt-4 text-[13px] tracking-[0.18em] uppercase text-white/85">Poems</div>
-              <div className="mt-2 text-sm text-white/65">Ten worlds, ten thousand poems.</div>
-            </div>
-          </div>
-        )}
+ {view === "galaxy" && (
+  <div className="absolute inset-0 flex items-center justify-center text-center text-white/90 z-10 pointer-events-none">
+    <div>
+      <motion.button
+        onClick={() => setView("library")}
+        className="mx-auto rounded-full focus:outline-none pointer-events-auto"
+        style={{
+          width: 132, height: 132,
+          border: "1px solid rgba(255,255,255,.22)",
+          boxShadow: "inset 0 0 36px rgba(255,255,255,.18), 0 0 36px rgba(255,255,255,.12)",
+          background: "radial-gradient(circle at 40% 35%, rgba(255,255,255,.12), rgba(255,255,255,.04))",
+          backdropFilter: "blur(6px)",
+        }}
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.98 }}
+        aria-label="Open poems library"
+      />
+      <div className="mt-4 text-[13px] tracking-[0.18em] uppercase text-white/85 pointer-events-none">Poems</div>
+      <div className="mt-2 text-sm text-white/65 pointer-events-none">Ten worlds, ten thousand poems.</div>
+    </div>
+  </div>
+)}
+
 
         <AnimatePresence mode="wait">
           {/* GALAXY (행성: 느린 회전 + hover는 자식만) */}
