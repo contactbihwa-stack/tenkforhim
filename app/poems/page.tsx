@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Navbar from "@/components/Navbar"
 import Starfield from "@/lib/starfield"
@@ -150,6 +150,7 @@ const generatePoems = (planetId: string, subthemeId: string, count = 100) => {
     const code = `ELON-${planetId}-${String(i).padStart(4, "0")}`
     poems.push({
       code,
+      planet: planetId,               // ⬅️ 라이브러리 필터용
       title: `Poem ${i + 1}`,
       firstLine: `This is the first line of poem ${i + 1}...`,
       text: `This is the full text of poem ${i + 1}.\n\nIt contains multiple lines\nand explores themes of ${subthemeId}.`,
@@ -163,11 +164,37 @@ const generatePoems = (planetId: string, subthemeId: string, count = 100) => {
  *  PAGE
  *  ----------------------*/
 export default function PoemCosmos() {
-  const [view, setView] = useState<"galaxy" | "planet" | "subtheme" | "poem">("galaxy")
+  const [view, setView] = useState<"galaxy" | "planet" | "subtheme" | "poem" | "library">("galaxy")
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null)
   const [selectedSubtheme, setSelectedSubtheme] = useState<string | null>(null)
   const [selectedPoem, setSelectedPoem] = useState<any>(null)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const [search, setSearch] = useState("")
+
+  // (데모) 전체 시 수집 — 실제 연결 시 /data/poems.json으로 대체 가능
+  const allPoems = useMemo(() => {
+    const out: any[] = []
+    planets.forEach((p) => {
+      subthemesByPlanet[p.id].forEach((s) => {
+        out.push(...generatePoems(p.id, s.id, 20)) // 부담되면 20~50로
+      })
+    })
+    return out
+  }, [])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return allPoems.filter((poem) => {
+      if (selectedPlanet && poem.planet !== selectedPlanet) return false
+      if (selectedSubtheme && poem.subtheme !== selectedSubtheme) return false
+      if (!q) return true
+      return (
+        poem.title?.toLowerCase().includes(q) ||
+        poem.firstLine?.toLowerCase().includes(q) ||
+        poem.text?.toLowerCase().includes(q)
+      )
+    })
+  }, [allPoems, search, selectedPlanet, selectedSubtheme])
 
   const handlePlanetClick = (planetId: string) => { setSelectedPlanet(planetId); setView("planet") }
   const handleSubthemeClick = (subthemeId: string) => { setSelectedSubtheme(subthemeId); setView("subtheme") }
@@ -177,6 +204,7 @@ export default function PoemCosmos() {
     if (view === "poem") { setView("subtheme"); setSelectedPoem(null) }
     else if (view === "subtheme") { setView("planet"); setSelectedSubtheme(null) }
     else if (view === "planet") { setView("galaxy"); setSelectedPlanet(null) }
+    else if (view === "library") { setView("galaxy") }
   }
 
   const handleStardustDive = () => {
@@ -216,13 +244,13 @@ export default function PoemCosmos() {
 
       {/* 본문(헤더 넘치지 않게 상단 패딩) */}
       <main className="relative z-30 flex items-center justify-center min-h-screen px-6" style={{ paddingTop: "72px" }}>
-        {/* 극장형 중앙: 상징 + 한 줄 문구 (galaxy 전용) */}
+        {/* 극장형 중앙: 클릭 시 라이브러리로 */}
         {view === "galaxy" && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-center text-white/90 z-10">
+          <div className="absolute inset-0 flex items-center justify-center text-center text-white/90 z-10">
             <div>
-              {/* 얇은 핵(회전 X, 맥동만) */}
-              <motion.div
-                className="mx-auto rounded-full"
+              <motion.button
+                onClick={() => setView("library")}
+                className="mx-auto rounded-full focus:outline-none"
                 style={{
                   width: 132, height: 132,
                   border: "1px solid rgba(255,255,255,.22)",
@@ -230,8 +258,9 @@ export default function PoemCosmos() {
                   background: "radial-gradient(circle at 40% 35%, rgba(255,255,255,.12), rgba(255,255,255,.04))",
                   backdropFilter: "blur(6px)",
                 }}
-                animate={{ scale: [1, 1.06, 1], opacity: [0.85, 1, 0.85] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.98 }}
+                aria-label="Open poems library"
               />
               <div className="mt-4 text-[13px] tracking-[0.18em] uppercase text-white/85">Poems</div>
               <div className="mt-2 text-sm text-white/65">Ten worlds, ten thousand poems.</div>
@@ -250,7 +279,6 @@ export default function PoemCosmos() {
               transition={{ duration: 0.8 }}
               className="relative w-full max-w-6xl aspect-square"
             >
-              {/* 느린 회전 래퍼 */}
               <motion.div
                 className="absolute inset-0"
                 animate={{ rotate: 360 }}
@@ -407,6 +435,17 @@ export default function PoemCosmos() {
                 const planet = planets.find((p) => p.id === selectedPlanet)!
                 const subtheme = subthemesByPlanet[selectedPlanet].find((s) => s.id === selectedSubtheme)!
                 const poems = generatePoems(selectedPlanet, selectedSubtheme)
+
+                // ⬇️ 좌표를 선택이 바뀔 때에만 생성해서 고정
+                const positions = useMemo(
+                  () =>
+                    Array.from({ length: poems.length }, () => ({
+                      x: 10 + Math.random() * 80,
+                      y: 10 + Math.random() * 80,
+                    })),
+                  [selectedPlanet, selectedSubtheme, poems.length]
+                )
+
                 return (
                   <>
                     <h2
@@ -422,11 +461,10 @@ export default function PoemCosmos() {
                       {subtheme.tagline}
                     </p>
 
-                    {/* 100개의 시 점 */}
+                    {/* 시 점 */}
                     <div className="relative w-full h-full">
                       {poems.map((poem, index) => {
-                        const x = 10 + Math.random() * 80
-                        const y = 10 + Math.random() * 80
+                        const { x, y } = positions[index]
                         return (
                           <motion.div
                             key={poem.code}
@@ -472,6 +510,72 @@ export default function PoemCosmos() {
                   </>
                 )
               })()}
+            </motion.div>
+          )}
+
+          {/* LIBRARY */}
+          {view === "library" && (
+            <motion.div
+              key="library"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.35 }}
+              className="w-full max-w-5xl mx-auto px-4 pt-20"
+            >
+              <div className="mb-6 flex flex-col sm:flex-row gap-3">
+                <select
+                  className="bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-sm text-white/90"
+                  value={selectedPlanet ?? ""}
+                  onChange={(e) => { const v = e.target.value || null; setSelectedPlanet(v); setSelectedSubtheme(null); }}
+                >
+                  <option value="">All Planets</option>
+                  {planets.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+
+                <select
+                  className="bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-sm text-white/90 disabled:opacity-40"
+                  disabled={!selectedPlanet}
+                  value={selectedSubtheme ?? ""}
+                  onChange={(e) => setSelectedSubtheme(e.target.value || null)}
+                >
+                  <option value="">All Subthemes</option>
+                  {(selectedPlanet ? subthemesByPlanet[selectedPlanet] : []).map((s) =>
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  )}
+                </select>
+
+                <input
+                  type="search"
+                  placeholder="Search title / first line / text"
+                  className="flex-1 bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-sm text-white/90"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {filtered.map((poem) => (
+                  <button
+                    key={poem.code}
+                    onClick={() => { setSelectedPoem(poem); setView("poem"); }}
+                    className="text-left bg-white/5 hover:bg-white/8 transition border border-white/10 rounded-2xl p-4"
+                  >
+                    <div className="text-xs text-white/50">{poem.code}</div>
+                    <div className="mt-1 text-white/90">{poem.title}</div>
+                    <div className="mt-1 text-xs text-white/60 line-clamp-2">{poem.firstLine}</div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={() => setView("galaxy")}
+                  className="px-4 py-2 text-sm rounded-full bg-white/5 border border-white/15 text-white/80 hover:bg-white/10"
+                >
+                  ← Back to galaxy
+                </button>
+              </div>
             </motion.div>
           )}
 
