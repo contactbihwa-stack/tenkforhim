@@ -18,7 +18,7 @@ const planets = [
   { id: "JUP", name: "JUP", tagline: "storms of infinite becoming", color: "#FFD000" },
   { id: "SAT", name: "SAT", tagline: "rings of time, circling silence", color: "#2FFFD0" },
   { id: "COS", name: "COS", tagline: "the breath between all things", color: "#4066FF" },
-  { id: "YOU", name: "YOU", tagline: "the spark reading this now", color: "#BFA500" },
+  { id: "YOU", name: "YOU", tagline: "the spark reading this now", color: "#8A0303" },
 ]
 
 const subthemesByPlanet: Record<string, Array<{ id: string; name: string; tagline: string }>> = {
