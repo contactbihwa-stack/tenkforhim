@@ -80,7 +80,7 @@ export default function Ignition() {
     setTimeout(() => setPoemVisible(true), 2200)
     const best = localStorage.getItem("bestHold")
     if (!best || total > Number(best)) localStorage.setItem("bestHold", String(total))
-    // if (audioRef.current) { audioRef.current.currentTime = 0; audioRef.current.play().catch(() => {}); }
+    // if (audioRef.current) { audioRef.current.currentTime = 0; audioRef.current.play().catch(() => {}) }
   }
 
   const reset = () => {
@@ -93,23 +93,20 @@ export default function Ignition() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
+      {/* background */}
       <div className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(65%_45%_at_50%_45%,rgba(0,255,255,0.05),transparent_70%)]" />
       </div>
       <Starfield />
 
-      <div className="absolute left-6 top-6 z-40">
-        <Link href="/" className="btn-glass px-3 py-1.5 text-sm pointer-events-auto">
-          ← Home
-        </Link>
-      </div>
-
+      {/* Best record (keep) */}
       {best && (
         <div className="absolute right-6 top-6 z-30 text-sm text-cyan-200/85">
           Best: {(Number(best) / 1000).toFixed(2)}s
         </div>
       )}
 
+      {/* main stage */}
       <div className="relative z-30 flex min-h-screen flex-col items-center justify-center text-center">
         <motion.div
           animate={{
@@ -127,21 +124,57 @@ export default function Ignition() {
           )}
         </motion.div>
 
-        <div className="absolute bottom-40 text-cyan-200 font-light">
-          {!launched && !isHolding && <p className="text-xl mb-2">Hold to ignite</p>}
-          {isHolding && <p className="text-xl">Charging… {(holdTime / 1000).toFixed(2)}s</p>}
-          {launched && <p className="text-lg text-cyan-200/80">Launching…</p>}
+        {/* footer controls */}
+        <div className="absolute bottom-20 left-0 right-0 flex flex-col items-center gap-3 text-center">
+          {/* Primary action button — now visibly a BUTTON */}
+          {!launched ? (
+            <button
+              onMouseDown={() => setIsHolding(true)}
+              onMouseUp={release}
+              onMouseLeave={() => isHolding && setIsHolding(false)}
+              onTouchStart={() => setIsHolding(true)}
+              onTouchEnd={release}
+              className="group relative inline-flex items-center justify-center rounded-full 
+                         bg-gradient-to-b from-cyan-400/90 to-cyan-600/90 px-8 py-3 font-medium text-slate-950
+                         shadow-[0_0_28px_rgba(34,211,238,0.35)] hover:shadow-[0_0_60px_rgba(34,211,238,0.45)]
+                         transition-all duration-300 active:scale-[0.98] select-none"
+              aria-label="Hold to ignite"
+            >
+              <span className="relative z-10">Hold to Ignite</span>
+              <span className="absolute inset-0 rounded-full bg-cyan-400/30 blur-lg opacity-0 group-hover:opacity-70 transition-opacity duration-500" />
+            </button>
+          ) : (
+            <button onClick={reset} className="btn-glass px-6 py-2">
+              Try Again
+            </button>
+          )}
+
+          {/* Gauge */}
+          {!launched && (
+            <div className="mt-1 w-56 h-[5px] rounded-full bg-cyan-500/15 overflow-hidden">
+              <div
+                style={{ width: `${Math.min(holdTime / 80, 100)}%` }}
+                className="h-full bg-cyan-400 shadow-[0_0_16px_#00ffff] transition-[width] duration-100"
+              />
+            </div>
+          )}
+
+          {/* Clear, split instructions */}
+          {!launched && !isHolding && (
+            <p className="text-sm text-cyan-200/80 mt-1">
+              Press and hold to ignite the engine. <br className="hidden sm:block" />
+              <span className="text-cyan-200/70">Release to launch.</span>
+            </p>
+          )}
+          {isHolding && (
+            <p className="text-sm text-cyan-200/80 mt-1">
+              Charging… {(holdTime / 1000).toFixed(2)}s
+            </p>
+          )}
+          {launched && <p className="text-sm text-cyan-200/70 mt-1">Launching…</p>}
         </div>
 
-        {!launched && (
-          <div className="absolute bottom-32 w-[260px] h-[6px] rounded-full bg-cyan-500/10 overflow-hidden">
-            <div
-              style={{ width: `${Math.min(holdTime / 80, 100)}%` }}
-              className="h-full bg-cyan-400/60 shadow-[0_0_16px_#00ffff] transition-[width] duration-100"
-            />
-          </div>
-        )}
-
+        {/* poetic line after launch */}
         <AnimatePresence>
           {poemVisible && (
             <motion.div
@@ -154,24 +187,6 @@ export default function Ignition() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        <div className="absolute bottom-16 flex gap-6">
-          {!launched ? (
-            <button
-              onMouseDown={() => setIsHolding(true)}
-              onMouseUp={release}
-              onTouchStart={() => setIsHolding(true)}
-              onTouchEnd={release}
-              className="btn-glass"
-            >
-              Hold / Release to Launch
-            </button>
-          ) : (
-            <button onClick={reset} className="btn-glass">
-              Try Again
-            </button>
-          )}
-        </div>
       </div>
     </div>
   )
