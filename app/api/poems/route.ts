@@ -1,17 +1,17 @@
 // app/api/poems/route.ts
 import { NextResponse } from "next/server";
 
-const NOCO_API_URL = process.env.NOCO_API_URL!;
-const NOCO_API_TOKEN = process.env.NOCO_API_TOKEN!;
+const NOCO_API_URL = process.env.NOCO_API_URL!;     // 예) https://lazy-rice-divide.loca.lt/api/v2/tables/m6h0l8o7bdn8r1m/records
+const NOCO_API_TOKEN = process.env.NOCO_API_TOKEN!; // Va… 로 시작하는 Personal Token
 
-// NocoDB 테이블 컬럼명(네가 올린 스크린샷 기준, 공백/한글 그대로)
+// NocoDB 컬럼(표시명 기준) — 스샷 기준으로 교정
 const F_TITLE = "Title";
 const F_SONG_TITLE = "노래제목";
 const F_LYRICS = "가사";
 const F_TOOL = "툴";
 const F_DATE = "제작일";
-const F_SUBTHEME = "소주제";
-const F_NOTE = "특이사항";
+const F_SUBTHEME = "T 소주제";     // ← 여기!
+const F_NOTE = "T 특이사항";       // ← 여기!
 const F_POEM = "시(Poem)";
 
 // "ELON-SUN-0008 - 3" → { code, planet: "SUN" }
@@ -30,7 +30,7 @@ export async function GET() {
       );
     }
 
-    // 필요한 필드만 받도록 쿼리(없어도 작동하지만 트래픽 절약)
+    // 필요한 필드만 받도록 쿼리 구성
     const fields = [
       F_TITLE, F_SONG_TITLE, F_LYRICS, F_TOOL, F_DATE, F_SUBTHEME, F_NOTE, F_POEM,
     ];
@@ -39,16 +39,34 @@ export async function GET() {
     fields.forEach((f) => url.searchParams.append("fields", f));
 
     const r = await fetch(url.toString(), {
-      headers: { "xc-token": NOCO_API_TOKEN },
+      headers: {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "xc-token": NOCO_API_TOKEN,                 // NocoDB 인증
+        "Bypass-Tunnel-Reminder": "true",           // loca.lt 공지 우회 (중요)
+      },
       cache: "no-store",
     });
 
+    const text = await r.text();
     if (!r.ok) {
-      const txt = await r.text();
-      return NextResponse.json({ error: txt }, { status: r.status });
+      return NextResponse.json({ error: text }, { status: r.status });
     }
 
-    const data = await r.json();
+    let data: any;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      // loca.lt가 HTML을 돌려주는 경우를 잡아줌
+      return new NextResponse(
+        JSON.stringify({
+          error: "Upstream returned non-JSON",
+          preview: text.slice(0, 500),
+        }),
+        { status: 502, headers: { "content-type": "application/json" } }
+      );
+    }
+
     const rows = Array.isArray(data?.list) ? data.list : data;
 
     const items = rows.map((row: any) => {
@@ -62,7 +80,7 @@ export async function GET() {
         date: row[F_DATE] ?? "",
         subtheme: row[F_SUBTHEME] ?? "",
         note: row[F_NOTE] ?? "",
-        poem: row[F_POEM] ?? "", // 사이트에 표시할 실제 시
+        poem: row[F_POEM] ?? "",
       };
     });
 
