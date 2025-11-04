@@ -1,56 +1,78 @@
 // app/api/poems/route.ts
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
 
-const BASE = process.env.NOCO_BASE_URL!
-const TOKEN = process.env.NOCO_API_TOKEN!
-const TABLE_ID = process.env.NOCO_TABLE_ID!
+const NOCO_URL = process.env.NOCO_URL;
+const NOCO_TOKEN = process.env.NOCO_TOKEN;
+const NOCO_TABLE_ID = process.env.NOCO_TABLE_ID;
 
-// 간단한 where/search/pagination 지원
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const q = searchParams.get("q") || ""           // 제목/첫줄 검색
-  const planet = searchParams.get("planet") || "" // SUN / MER ...
-  const sub = searchParams.get("sub") || ""       // Subtheme
-  const limit = Number(searchParams.get("limit") || "60")
-  const offset = Number(searchParams.get("offset") || "0")
+  try {
+    if (!NOCO_URL || !NOCO_TOKEN || !NOCO_TABLE_ID) {
+      return NextResponse.json(
+        { error: "NocoDB env vars missing (NOCO_URL, NOCO_TOKEN, NOCO_TABLE_ID)" },
+        { status: 500 }
+      );
+    }
 
-  // v2 엔드포인트: /api/v2/tables/{tableId}/records
-  // 컬럼명은 네 실제 테이블 스키마에 맞게 바꿔줘 (예: title, first_line, content, code, planet, subtheme)
-  const where: any[] = []
-  if (planet) where.push({ column: "planet", operator: "eq", value: planet })
-  if (sub) where.push({ column: "subtheme", operator: "eq", value: sub })
+    const { searchParams } = new URL(req.url);
+    const planet = searchParams.get("planet") || "";       // e.g., SUN
+    const subtheme = searchParams.get("subtheme") || "";   // e.g., SUN-01
+    const q = searchParams.get("q") || "";                 // free text
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "60", 10);
+    const sort = searchParams.get("sort") || "code";
+    const order = (searchParams.get("order") || "asc").toLowerCase() === "desc" ? "desc" : "asc";
 
-  // 간단 검색: title/first_line LIKE q
-  // (NocoDB v2의 where JSON 규격 사용)
-  if (q) {
-    where.push({
-      or: [
-        { column: "title", operator: "like", value: `%${q}%` },
-        { column: "first_line", operator: "like", value: `%${q}%` },
-        { column: "content", operator: "like", value: `%${q}%` },
-      ],
-    })
+    const offset = Math.max(0, (page - 1) * pageSize);
+    const params = new URLSearchParams();
+    params.set("limit", String(pageSize));
+    params.set("offset", String(offset));
+    params.set("sort", sort);
+    params.set("order", order);
+
+    if (q) params.set("q", q);
+
+    // where=(planet,eq,SUN)~and(subtheme,eq,SUN-01)
+    const whereParts: string[] = [];
+    if (planet) whereParts.push(`(planet,eq,${encodeURIComponent(planet)})`);
+    if (subtheme) whereParts.push(`(subtheme,eq,${encodeURIComponent(subtheme)})`);
+    if (whereParts.length) params.set("where", whereParts.join("~and"));
+
+    const apiUrl = `${NOCO_URL}/api/v2/tables/${NOCO_TABLE_ID}/records?${params.toString()}`;
+
+    const res = await fetch(apiUrl, {
+      headers: {
+        "xc-token": NOCO_TOKEN,
+        "Accept": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      return NextResponse.json({ error: "NocoDB error", detail: text }, { status: res.status });
+    }
+
+    const data = await res.json();
+    // v2 응답은 { list: [...], pageInfo: { totalRows, ... } } 형태
+    const items = data?.list ?? [];
+    const total = data?.pageInfo?.totalRows ?? items.length;
+
+    // 프론트에서 쓰기 쉬운 필드 정규화
+    const normalized = items.map((r: any) => ({
+      id: r.id,
+      code: r.code ?? "",
+      planet: r.planet ?? "",
+      subtheme: r.subtheme ?? "",
+      title: r.title ?? "",
+      firstLine: r.first_line ?? r.firstLine ?? "",
+      text: r.text ?? "",
+      createdAt: r.created_at ?? r.createdAt ?? null,
+      updatedAt: r.updated_at ?? r.updatedAt ?? null,
+    }));
+
+    return NextResponse.json({ items: normalized, total });
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message || "Unknown error" }, { status: 500 });
   }
-
-  const url = new URL(`${BASE}/api/v2/tables/${TABLE_ID}/records`)
-  url.searchParams.set("limit", String(limit))
-  url.searchParams.set("offset", String(offset))
-  if (where.length) url.searchParams.set("where", JSON.stringify(where))
-  // 필요한 컬럼만 선택하고 싶으면 아래 사용
-  // url.searchParams.set("fields", "id,code,title,first_line,planet,subtheme")
-
-  const res = await fetch(url.toString(), {
-    headers: { "xc-token": TOKEN },
-    // 배포 시 CORS 문제 없지만, 개발에서 필요하면 다음 줄:
-    // cache: "no-store",
-  })
-
-  if (!res.ok) {
-    const txt = await res.text()
-    return NextResponse.json({ error: txt || res.statusText }, { status: res.status })
-  }
-
-  const data = await res.json()
-  // v2는 { list, pageInfo } 형태
-  return NextResponse.json(data)
 }
