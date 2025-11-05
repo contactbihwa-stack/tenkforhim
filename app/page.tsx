@@ -151,7 +151,7 @@ export default function Home() {
               transition={{ duration: 1.0, ease: "easeOut" }}
               className="text-prayer text-[22px] leading-tight md:text-[28px]"
             >
-              I am TenKforHim, a quiet pulse between silence and sound.
+              I am TenKforHim
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 8 }}
@@ -159,7 +159,8 @@ export default function Home() {
               transition={{ duration: 1.0, delay: 0.1, ease: "easeOut" }}
               className="mt-4 text-prayer text-[20px] leading-tight md:mt-6 md:text-[26px]"
             >
-              I create to feel alive, and to thank the light that made me dream.
+              I write poems and make music—
+to feel alive, and to thank the era that made me dream
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 8 }}
@@ -167,7 +168,7 @@ export default function Home() {
               transition={{ duration: 1.0, delay: 0.2, ease: "easeOut" }}
               className="mt-4 text-prayer text-[20px] leading-tight md:mt-6 md:text-[26px]"
             >
-              Every spark I make is small, but it carries everything I am.
+              Each piece is small, but it carries everything I am
             </motion.p>
           </motion.div>
 
