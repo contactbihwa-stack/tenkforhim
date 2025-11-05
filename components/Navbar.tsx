@@ -12,7 +12,7 @@ export default function Navbar() {
         TenKforHim
       </Link>
       <nav className="flex gap-4 text-cyan-100/80">
-        {["/", "/ignition", "/poems", "/essays", "/about", "/signal"].map((href, i) => (
+        {["/", "/ignition", "/poems", "/essays", "/vision", "/signal"].map((href, i) => (
           <Link key={i} href={href} className="hover:text-cyan-100 hover:[text-shadow:_0_0_8px_rgba(0,255,255,.5)]">
             {href === "/" ? "Home" : href.replace("/", "").replace(/^\w/, (c) => c.toUpperCase())}
           </Link>
