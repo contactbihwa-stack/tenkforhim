@@ -19,7 +19,7 @@ type Trail = {
 const trails: Trail[] = [
   { name: "Ignition", subtitle: "Where creation begins.", href: "/ignition", color: "#FF5C00", path: "M 100 300 Q 300 100, 500 200" },
   { name: "Poems",    subtitle: "Every star hides a poem.", href: "/poems",    color: "#FF006F", path: "M 200 500 Q 400 300, 600 400" },
-  { name: "Vision",   subtitle: "The vow that started it all.", href: "/about", color: "#00D9FF", path: "M 700 200 Q 900 400, 1100 300" },
+  { name: "Vision",   subtitle: "The vow that started it all.", href: "/vision", color: "#00D9FF", path: "M 700 200 Q 900 400, 1100 300" },
   { name: "Essays",   subtitle: "Thoughts that became galaxies.", href: "/essays", color: "#4066FF", path: "M 800 500 Q 1000 250, 1200 450" },
   { name: "Signal",    subtitle: "Where the sparks are shared.", href: "/signal",  color: "#FFD700", path: "M 300 150 Q 500 400, 700 250" },
 ];
