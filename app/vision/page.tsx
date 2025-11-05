@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Starfield from "@/lib/starfield";
 import { useState, useEffect } from "react";
 
-export default function About() {
+export default function Vision() {
   const [cursorSparks, setCursorSparks] = useState<
     Array<{ id: number; x: number; y: number }>
   >([]);
