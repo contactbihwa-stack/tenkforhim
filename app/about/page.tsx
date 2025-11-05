@@ -1,37 +1,44 @@
-"use client"
-import Navbar from "@/components/Navbar"
-import { motion } from "framer-motion"
-import Starfield from "@/lib/starfield"
-import { useState, useEffect } from "react"
+"use client";
+
+import Navbar from "@/components/Navbar";
+import { motion } from "framer-motion";
+import Starfield from "@/lib/starfield";
+import { useState, useEffect } from "react";
 
 export default function About() {
-  const [cursorSparks, setCursorSparks] = useState<Array<{ id: number; x: number; y: number }>>([])
+  const [cursorSparks, setCursorSparks] = useState<
+    Array<{ id: number; x: number; y: number }>
+  >([]);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const isTouchDevice =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
-    if (prefersReducedMotion || isTouchDevice) return
+    if (prefersReducedMotion || isTouchDevice) return;
 
-    let sparkId = 0
+    let sparkId = 0;
     const onMouseMove = (e: MouseEvent) => {
       if (Math.random() > 0.92) {
-        const newSpark = { id: sparkId++, x: e.clientX, y: e.clientY }
-        setCursorSparks((prev) => [...prev.slice(-2), newSpark])
+        const newSpark = { id: sparkId++, x: e.clientX, y: e.clientY };
+        setCursorSparks((prev) => [...prev.slice(-2), newSpark]);
         setTimeout(() => {
-          setCursorSparks((prev) => prev.filter((s) => s.id !== newSpark.id))
-        }, 1500)
+          setCursorSparks((prev) => prev.filter((s) => s.id !== newSpark.id));
+        }, 1500);
       }
-    }
+    };
 
-    window.addEventListener("mousemove", onMouseMove)
-    return () => window.removeEventListener("mousemove", onMouseMove)
-  }, [])
+    window.addEventListener("mousemove", onMouseMove);
+    return () => window.removeEventListener("mousemove", onMouseMove);
+  }, []);
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       <Navbar />
 
+      {/* Background */}
       <div className="fixed inset-0 z-[-1] pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-b from-[#030512] to-[#0b0f1e]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_40%,rgba(0,217,255,0.04),transparent_70%)]" />
@@ -70,6 +77,7 @@ export default function About() {
 
       <Starfield />
 
+      {/* Cursor Sparks */}
       {cursorSparks.map((spark) => (
         <motion.div
           key={spark.id}
@@ -85,6 +93,7 @@ export default function About() {
         />
       ))}
 
+      {/* Main */}
       <main className="relative z-30 mx-auto max-w-[760px] px-6 pt-28 pb-24">
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
@@ -99,74 +108,88 @@ export default function About() {
           className="space-y-8 text-[#dbe8ff] text-[21px] leading-[1.7] font-light"
           style={{ fontFamily: "Inter, sans-serif" }}
         >
+          {/* Lead */}
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
-            TenKforHim is not a project, but a vow.
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.6 }}
-          >
-            It was born from a wish to make life deeper and brighter through creation,
+            TenKforHim started with a simple wish:
             <br />
-            from a single flame that rose in the void,
-            <br />a light I could not ignore.
+            <strong>to make something that matters—and to say thank you.</strong>
+          </motion.p>
+
+          {/* Story */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
+          >
+            I didn’t plan this for years.
+            <br />
+            I didn’t wait until I was ready.
+            <br />
+            I just started—with AI tools, a laptop, and gratitude.
           </motion.p>
 
           <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.8 }}
+          >
+            Now I write poems, make music, and ship small projects
+            <br />
+            that turn feeling into form.
+          </motion.p>
+
+          {/* ELON:10,000 block */}
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 2.4 }}
+            className="rounded-2xl border border-white/15 bg-white/5 p-5"
           >
-            Now I write, compose, and build,
+            <p>
+              <strong>ELON:10,000</strong> is my first large-scale build:
+            </p>
+            <p className="mt-2">
+              <strong>10,000 songs and 10,000 poems</strong> dedicated to Elon
+              Musk
+              <br />
+              and the era that made creation accessible.
+            </p>
+          </motion.div>
+
+          {/* Philosophy */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 3.0 }}
+          >
+            Every piece I make is small.
             <br />
-            so that gratitude may outlast time.
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 3.2 }}
-          >
-            Every creation is a prayer,
+            Together, they’re a record—
             <br />
-            every spark, a proof of life.
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 4.0 }}
-            className="text-[#B6E1FF]"
-          >
-            This is the inner orbit of ELON:10,000,
-            <br />a circle of light for those who still believe
+            of gratitude, of this moment, and of what one person can build
             <br />
-            that creation can change the world.
+            when the tools finally exist.
           </motion.p>
 
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 4.8 }}
-            className="italic text-[#B6E1FF] pt-4"
-            style={{
-              animation: "breathe-glow 5s ease-in-out infinite",
-            }}
+            transition={{ duration: 0.6, delay: 3.6 }}
+            className="font-medium"
           >
-            To create is to remember the light.
+            The vow is simple: keep building.
           </motion.p>
 
+          {/* CTA */}
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 5.6 }}
-            className="pt-8 text-center text-[18px]"
+            transition={{ duration: 0.6, delay: 4.2 }}
+            className="pt-6 text-center text-[18px]"
           >
             <a
               href="https://elon10000.com"
@@ -177,24 +200,13 @@ export default function About() {
                 textDecoration: "none",
                 textShadow: "0 0 12px rgba(182,225,255,0.3)",
               }}
+              aria-label="Explore ELON:10,000 — elon10000.com"
             >
-              The vow continues at ELON10000.com
+              Explore ELON:10,000 → <span className="underline">elon10000.com</span>
             </a>
           </motion.p>
         </motion.div>
       </main>
-
-      <style jsx>{`
-        @keyframes breathe-glow {
-          0%,
-          100% {
-            text-shadow: 0 0 8px rgba(182, 225, 255, 0.3);
-          }
-          50% {
-            text-shadow: 0 0 16px rgba(182, 225, 255, 0.5);
-          }
-        }
-      `}</style>
     </div>
-  )
+  );
 }
