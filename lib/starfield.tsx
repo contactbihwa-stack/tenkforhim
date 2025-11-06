@@ -1,133 +1,201 @@
-"use client"
-import { useEffect, useRef } from "react"
+"use client";
 
+import { useEffect, useRef } from "react";
+
+/**
+ * Starfield – lightweight, crisp, and click-through.
+ * - Fixed behind UI (-z-10) + pointer-events-none (절대 클릭 안가로챔)
+ * - DPR 스케일링으로 레티나에서도 선명
+ * - 윈도우 크기/밀도에 따라 별 개수 자동 조절
+ * - Reduce Motion / 터치 기기 대응
+ */
 export default function Starfield({ className = "" }: { className?: string }) {
-  const ref = useRef<HTMLCanvasElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const c = ref.current
-    if (!c) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    const ctx = c.getContext("2d")!
-    let w = (c.width = window.innerWidth)
-    let h = (c.height = window.innerHeight)
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0
+    // --- 환경 감지
+    const mm = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let prefersReducedMotion = mm.matches;
+    const onMM = (e: MediaQueryListEvent) => (prefersReducedMotion = e.matches);
+    mm.addEventListener?.("change", onMM);
 
-    let targetCursorX = w / 2
-    let targetCursorY = h / 2
-    let cursorX = w / 2
-    let cursorY = h / 2
+    const isTouch =
+      "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.maxTouchPoints > 0;
 
-    const createLayer = (count: number, layer: "far" | "mid" | "near") => {
-      const layerConfig = {
+    // --- 크기 & DPR 셋업
+    const state = {
+      w: 0,
+      h: 0,
+      dpr: Math.max(1, Math.min(2, window.devicePixelRatio || 1)), // 1~2로 제한 (성능)
+    };
+
+    type Star = {
+      x: number;
+      y: number;
+      baseX: number;
+      baseY: number;
+      r: number;
+      a: number;
+      speed: number;
+      maxTranslate: number;
+    };
+
+    let stars: Star[] = [];
+    let targetX = 0;
+    let targetY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+
+    const lerp = (s: number, e: number, t: number) => s + (e - s) * t;
+    const clamp = (v: number, min: number, max: number) =>
+      Math.max(min, Math.min(max, v));
+
+    function createLayer(count: number, layer: "far" | "mid" | "near") {
+      const cfg = {
         far: { speed: 0.25, maxTranslate: 2 },
         mid: { speed: 0.5, maxTranslate: 5 },
         near: { speed: 1.0, maxTranslate: 10 },
-      }
-      const config = layerConfig[layer]
+      }[layer];
 
-      return Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        baseX: 0,
-        baseY: 0,
-        r:
+      const arr: Star[] = Array.from({ length: count }, () => {
+        const r =
           layer === "far"
             ? Math.random() * 0.5 + 0.3
             : layer === "mid"
-              ? Math.random() * 0.6 + 0.4
-              : Math.random() * 0.8 + 0.5,
-        a: Math.random() * 0.3 + 0.35,
-        speed: config.speed,
-        maxTranslate: config.maxTranslate,
-      }))
+            ? Math.random() * 0.6 + 0.4
+            : Math.random() * 0.8 + 0.5;
+
+        return {
+          x: Math.random() * state.w,
+          y: Math.random() * state.h,
+          baseX: 0,
+          baseY: 0,
+          r,
+          a: Math.random() * 0.3 + 0.35,
+          speed: cfg.speed,
+          maxTranslate: cfg.maxTranslate,
+        };
+      });
+
+      return arr;
     }
 
-    const farStars = createLayer(40, "far")
-    const midStars = createLayer(40, "mid")
-    const nearStars = createLayer(40, "near")
-    const allStars = [...farStars, ...midStars, ...nearStars]
+    function resize() {
+      state.w = window.innerWidth;
+      state.h = window.innerHeight;
 
-    allStars.forEach((s) => {
-      s.baseX = s.x
-      s.baseY = s.y
-    })
+      // DPR 스케일
+      canvas.width = Math.floor(state.w * state.dpr);
+      canvas.height = Math.floor(state.h * state.dpr);
+      canvas.style.width = `${state.w}px`;
+      canvas.style.height = `${state.h}px`;
+      ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
 
-    const lerp = (start: number, end: number, factor: number) => {
-      return start + (end - start) * factor
+      // 화면 면적당 밀도 (조정 가능)
+      const area = state.w * state.h;
+      const density = Math.max(0.00005, Math.min(0.00012, 0.00009)); // 90개 / 1e6px^2 정도
+      const total = Math.max(60, Math.floor(area * density));
+
+      const far = Math.floor(total * 0.35);
+      const mid = Math.floor(total * 0.35);
+      const near = Math.max(10, total - far - mid);
+
+      const farStars = createLayer(far, "far");
+      const midStars = createLayer(mid, "mid");
+      const nearStars = createLayer(near, "near");
+      stars = [...farStars, ...midStars, ...nearStars];
+
+      stars.forEach((s) => {
+        s.baseX = s.x;
+        s.baseY = s.y;
+      });
+
+      targetX = state.w / 2;
+      targetY = state.h / 2;
+      cursorX = targetX;
+      cursorY = targetY;
     }
 
-    const clamp = (value: number, min: number, max: number) => {
-      return Math.max(min, Math.min(max, value))
-    }
-
-    let raf: number
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h)
-
-      cursorX = lerp(cursorX, targetCursorX, 0.12)
-      cursorY = lerp(cursorY, targetCursorY, 0.12)
-
-      const offsetX = ((cursorX - w / 2) / w) * 0.025
-      const offsetY = ((cursorY - h / 2) / h) * 0.025
-
-      for (const s of allStars) {
-        if (prefersReducedMotion || isTouchDevice) {
-          s.x = s.baseX
-          s.y = s.baseY
-        } else {
-          const translateX = clamp(offsetX * w * s.speed, -s.maxTranslate, s.maxTranslate)
-          const translateY = clamp(offsetY * h * s.speed, -s.maxTranslate, s.maxTranslate)
-          s.x = s.baseX + translateX
-          s.y = s.baseY + translateY
-        }
-
-        // Gentle twinkling
-        s.a += (Math.random() - 0.5) * 0.02
-        const alpha = Math.max(0.2, Math.min(0.65, s.a))
-
-        ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`
-        ctx.beginPath()
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
-        ctx.fill()
-      }
-      raf = requestAnimationFrame(draw)
-    }
-    draw()
+    // 리사이즈 스로틀
+    let resizeRaf: number | null = null;
+    const onResize = () => {
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(() => {
+        resizeRaf = null;
+        resize();
+      });
+    };
 
     const onMouseMove = (e: MouseEvent) => {
-      if (!prefersReducedMotion && !isTouchDevice) {
-        targetCursorX = e.clientX
-        targetCursorY = e.clientY
+      if (!prefersReducedMotion && !isTouch) {
+        targetX = e.clientX;
+        targetY = e.clientY;
       }
+    };
+
+    function draw() {
+      ctx.clearRect(0, 0, state.w, state.h);
+
+      // 커서 따라 부드럽게
+      cursorX = lerp(cursorX, targetX, 0.12);
+      cursorY = lerp(cursorY, targetY, 0.12);
+
+      const offsetX = ((cursorX - state.w / 2) / state.w) * 0.025;
+      const offsetY = ((cursorY - state.h / 2) / state.h) * 0.025;
+
+      for (const s of stars) {
+        // 모션 최소화/터치면 정적
+        if (prefersReducedMotion || isTouch) {
+          s.x = s.baseX;
+          s.y = s.baseY;
+        } else {
+          const tx = clamp(offsetX * state.w * s.speed, -s.maxTranslate, s.maxTranslate);
+          const ty = clamp(offsetY * state.h * s.speed, -s.maxTranslate, s.maxTranslate);
+          s.x = s.baseX + tx;
+          s.y = s.baseY + ty;
+        }
+
+        // 은은한 반짝임
+        s.a += (Math.random() - 0.5) * 0.02;
+        const alpha = clamp(s.a, 0.2, 0.65);
+
+        ctx.fillStyle = `rgba(160, 255, 255, ${alpha})`; // 살짝 청록
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      rafRef.current = requestAnimationFrame(draw);
     }
 
-    const onResize = () => {
-      w = c.width = window.innerWidth
-      h = c.height = window.innerHeight
-      allStars.forEach((s) => {
-        s.baseX = Math.random() * w
-        s.baseY = Math.random() * h
-        s.x = s.baseX
-        s.y = s.baseY
-      })
-      targetCursorX = w / 2
-      targetCursorY = h / 2
-      cursorX = w / 2
-      cursorY = h / 2
-    }
-
-    window.addEventListener("mousemove", onMouseMove)
-    window.addEventListener("resize", onResize)
+    // 초기화 & 루프 시작
+    resize();
+    window.addEventListener("resize", onResize);
+    window.addEventListener("mousemove", onMouseMove);
+    rafRef.current = requestAnimationFrame(draw);
 
     return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener("mousemove", onMouseMove)
-      window.removeEventListener("resize", onResize)
-    }
-  }, [])
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("mousemove", onMouseMove);
+      mm.removeEventListener?.("change", onMM);
+    };
+  }, []);
 
-  return <canvas ref={ref} className={`fixed inset-0 z-0 pointer-events-none ${className}`} />
+  // 뒤로 보내고, 클릭은 통과시키기
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`fixed inset-0 -z-10 pointer-events-none ${className}`}
+      aria-hidden="true"
+    />
+  );
 }
+
