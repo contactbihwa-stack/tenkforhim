@@ -70,6 +70,14 @@ type PoemItem = {
 type Origin = "subtheme" | "library" | "stardust" | "galaxy" | null;
 
 /** ------------ HELPERS ------------ */
+// 코드가 title 앞에 이미 있으면 제거하고 "CODE - 제목"만 만들기
+const makeHeading = (code: string, title?: string) => {
+  const t = title ?? "";
+  const pattern = new RegExp(`^${code}\\s*[-–—:]\\s*`, "i"); // CODE + 구분자 제거
+  const cleaned = t.replace(pattern, "").trim();
+  return cleaned ? `${code} - ${cleaned}` : code;
+};
+
 // 대소문자/공백/구두점 느슨 검색 (본문 표시에는 절대 사용하지 않음)
 const norm = (s?: string) =>
   (s ?? "")
@@ -560,19 +568,20 @@ export default function PoemCosmos() {
                   backdropFilter: "blur(20px)",
                 }}
               >
-                {/* 상단 메타: 좌측 비움, 우측에 날짜 표시 */}
-                <div className="flex items-center justify-between mb-6 text-xs font-light text-cyan-100/50">
-                  <span />
-                  <span>{selectedPoem.date || ""}</span>
-                </div>
+             {/* 상단 메타: ⬅ 날짜 | ⮕ 소주제 */}
+<div className="flex items-center justify-between mb-6 text-xs font-light text-cyan-100/50">
+  <span>{selectedPoem.date || ""}</span>
+  <span>{selectedPoem.subtheme || ""}</span>
+</div>
 
-                {/* 큰 타이틀: CODE - TITLE (제목 없으면 CODE만) */}
-                <h3
-                  className="text-3xl font-light text-center mb-8 tracking-wide"
-                  style={{ color: currentPlanet.color, textShadow: `0 0 20px ${currentPlanet.color}99` }}
-                >
-                  {selectedPoem.code}{selectedPoem.title ? ` - ${selectedPoem.title}` : ""}
-                </h3>
+{/* 큰 타이틀: 중복 방지 */}
+<h3
+  className="text-3xl font-light text-center mb-8 tracking-wide"
+  style={{ color: currentPlanet.color, textShadow: `0 0 20px ${currentPlanet.color}99` }}
+>
+  {makeHeading(selectedPoem.code, selectedPoem.title)}
+</h3>
+
 
                 {/* 본문: 원문 그대로(따옴표/말미 공백 포함) */}
                 <pre className="text-cyan-100/90 font-light text-lg leading-relaxed whitespace-pre-wrap text-center tracking-wide">
