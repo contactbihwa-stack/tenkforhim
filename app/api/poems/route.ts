@@ -8,53 +8,50 @@ export const runtime = 'nodejs'
 function mask(s?: string) {
   if (!s) return '(empty)'
   if (s.length <= 8) return '(too-short)'
-  return s.slice(0,4) + '...'+ s.slice(-4)
+  return s.slice(0,4) + '...' + s.slice(-4)
 }
 
 export async function GET() {
-  // 1) ENV 확인
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  // 1) ENV 읽고 "깨끗하게" 다듬기
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+  const url = rawUrl.trim().replace(/\/+$/, '')  // 앞뒤 공백 제거 + 끝의 / 제거
 
   if (!url || !anon) {
     return NextResponse.json({
       step: 'env',
       ok: false,
       message: 'Supabase env not set',
+      rawUrl,
       url,
       anon: mask(anon),
     }, { status: 500 })
   }
 
-  // 2) 네트워크/도메인 헬스체크 (auth 헬스는 테이블 없어도 200)
+  // 2) health 체크 (apikey 없이도 시도 → 실패 시 apikey로 재시도)
   try {
-    const health = await fetch(`${url}/auth/v1/health`, {
-      headers: { apikey: anon },
-      // 기본 timeout은 없으니, Vercel에서 걸릴 경우를 대비
-      cache: 'no-store',
-    })
-    const text = await health.text()
-    if (!health.ok) {
+    const h1 = await fetch(`${url}/auth/v1/health`, { cache: 'no-store' })
+    if (!h1.ok) {
+      const body = await h1.text()
       return NextResponse.json({
-        step: 'health',
+        step: 'health-no-key',
         ok: false,
-        status: health.status,
-        body: text.slice(0,200),
+        status: h1.status,
+        body: body.slice(0,200),
         url,
-        anon: mask(anon),
       }, { status: 500 })
     }
   } catch (e: any) {
+    // fetch 자체 실패(오타/공백/네트워크)
     return NextResponse.json({
-      step: 'fetch',
+      step: 'fetch-no-key',
       ok: false,
       message: String(e?.message || e),
       url,
-      anon: mask(anon),
     }, { status: 500 })
   }
 
-  // 3) 실제 쿼리 (여기부터 기존 로직)
+  // 3) 실제 쿼리 시도
   const supabase = getSupabaseClient()
   if (!supabase) {
     return NextResponse.json({
@@ -80,7 +77,6 @@ export async function GET() {
     }, { status: 500 })
   }
 
-  // 성공
   return NextResponse.json({
     step: 'done',
     ok: true,
@@ -88,3 +84,4 @@ export async function GET() {
     sample: data?.slice(0,1) ?? [],
   })
 }
+
