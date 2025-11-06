@@ -1,80 +1,99 @@
 // app/api/poems/route.ts
 import { NextResponse } from "next/server";
 
-/** Title 예시: "ELON-SUN-0008 - Horizon" 에서 코드/행성/제목을 분리 */
-function parseTitle(title: string) {
-  const m = title?.match(/^(ELON-(\w+)-\d+)\s*-\s*(.+)$/);
-  if (m) return { code: m[1], planet: m[2], poemTitle: m[3] };
-  // 코드 포맷이 아니어도 안전하게 처리
-  return { code: title || "", planet: "UNKNOWN", poemTitle: title || "" };
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+type Row = { Title?: string; Subtheme?: string; Date?: string; Poem?: string };
+
+// Title 안 건드리고, 별도로 "추정"만 한다 (표시용 X, 로직용 옵션)
+function guessFromTitle(raw: string) {
+  const m = (raw || "").replace(/\s+/g, " ").match(/ELON[-\s]?([A-Z]{3})[-\s]?(\d{4})/);
+  return {
+    codeGuess: m ? `ELON-${m[1]}-${m[2]}` : (raw || ""),
+    planetGuess: m ? m[1] : "UNKNOWN",
+  };
 }
 
 export async function GET() {
-  try {
-    const url = process.env.NEXT_PUBLIC_POEMS_CSV_URL; // ← Vercel에 넣어둔 CSV 주소
-    if (!url) throw new Error("Missing env: NEXT_PUBLIC_POEMS_CSV_URL");
+  const csvUrl = process.env.NEXT_PUBLIC_POEMS_CSV_URL?.trim();
+  if (!csvUrl) {
+    return NextResponse.json({ ok: false, error: "NEXT_PUBLIC_POEMS_CSV_URL missing" }, { status: 500 });
+  }
 
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw new Error(`CSV fetch failed (${r.status})`);
+  const r = await fetch(csvUrl, { cache: "no-store" });
+  if (!r.ok) {
+    return NextResponse.json({ ok: false, error: `CSV fetch failed: ${r.status}` }, { status: 500 });
+  }
+  const text = await r.text();
 
-    const text = await r.text();
+  // 간단 CSV 파서 (따옴표 포함 멀티라인 보존, 셀 내용은 trim 안 함!)
+  const lines = text.replace(/\r\n|\r/g, "\n").split("\n");
+  const header = (lines[0] || "").split(",").map(s => s);
+  const idx = {
+    title: header.findIndex(h => /^title$/i.test(h.trim())),
+    sub:   header.findIndex(h => /^subtheme$/i.test(h.trim())),
+    date:  header.findIndex(h => /^date$/i.test(h.trim())),
+    poem:  header.findIndex(h => /^poem$/i.test(h.trim())),
+  };
 
-    // CSV 파싱(심플): 줄 → 칼럼. 헤더는 정확히 Title,Date,Subtheme,Poem 이어야 함
-    const lines = text.split(/\r?\n/).filter(Boolean);
-    const header = lines.shift()!;
-    const cols = header.split(",");
+  const rows: Row[] = [];
+  let i = 1;
+  while (i < lines.length) {
+    let row = lines[i++];
+    if (row === undefined) break;
+    if (row === "") { rows.push({}); continue; }
 
-    const idx = {
-      Title: cols.indexOf("Title"),
-      Date: cols.indexOf("Date"),
-      Subtheme: cols.indexOf("Subtheme"),
-      Poem: cols.indexOf("Poem"),
-    };
-    for (const k of Object.keys(idx) as (keyof typeof idx)[]) {
-      if (idx[k] === -1) throw new Error(`CSV header missing: ${k}`);
+    // 따옴표 균형 맞출 때까지 이어붙임 (셀 내부 줄바꿈 보존)
+    let q = (row.match(/"/g) || []).length;
+    while (q % 2 === 1 && i < lines.length) {
+      row += "\n" + lines[i++];
+      q = (row.match(/"/g) || []).length;
     }
 
-    const items = lines.map((line) => {
-      // CSV 안의 콤마를 단순히 split하면 깨질 수 있어, 큰따옴표 감싸진 경우를 처리
-      const cells: string[] = [];
-      let cur = "";
-      let inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"' ) {
-          // "" => " 이스케이프
-          if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
-          else inQ = !inQ;
-        } else if (ch === "," && !inQ) {
-          cells.push(cur); cur = "";
-        } else {
-          cur += ch;
-        }
+    // 셀 파싱: 외곽 따옴표는 CSV 규칙상 떨어지지만, 내부 "" -> " 만 복원.
+    const cols: string[] = [];
+    let cur = "", inQ = false;
+    for (let k = 0; k < row.length; k++) {
+      const ch = row[k];
+      if (ch === '"') {
+        if (inQ && row[k + 1] === '"') { cur += '"'; k++; }
+        else { inQ = !inQ; }
+      } else if (ch === "," && !inQ) {
+        cols.push(cur); cur = "";
+      } else {
+        cur += ch;
       }
-      cells.push(cur);
+    }
+    cols.push(cur);
 
-      const title = cells[idx.Title] || "";
-      const date = cells[idx.Date] || "";
-      const subtheme = cells[idx.Subtheme] || "";
-      const poem = cells[idx.Poem] || "";
+    // ⚠️ 여기서 **trim 하지 않는다** — 의도한 공백/따옴표 모두 보존
+    const get = (idx: number) => (idx >= 0 ? (cols[idx] ?? "") : "");
 
-      const { code, planet, poemTitle } = parseTitle(title);
+    const Title    = get(idx.title);
+    const Subtheme = get(idx.sub);
+    const Date     = get(idx.date);
+    const Poem     = get(idx.poem);
 
+    rows.push({ Title, Subtheme, Date, Poem });
+  }
+
+  const items = rows
+    .filter(r => r.Title !== undefined && r.Title !== "")
+    .map((r) => {
+      const { codeGuess, planetGuess } = guessFromTitle(r.Title || "");
       return {
-        code,
-        planet,
-        title: poemTitle,
-        poem,
-        subtheme,
-        date,
+        // 화면 표시는 이 titleRaw 를 그대로 사용
+        title: r.Title ?? "",
+        // 사용자가 원하면 쓸 수 있는 옵션 필드 (표시엔 사용 X)
+        code: codeGuess,
+        planet: planetGuess,
+        subtheme: r.Subtheme ?? "",
+        date: r.Date ?? "",
+        // 시 본문도 **원본 그대로** 전달 (trim/quote 제거 없음)
+        poem: r.Poem ?? "",
       };
     });
 
-    return NextResponse.json({ items });
-  } catch (err: any) {
-    return NextResponse.json(
-      { step: "poems-api", ok: false, error: err?.message || String(err) },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({ ok: true, items });
 }
