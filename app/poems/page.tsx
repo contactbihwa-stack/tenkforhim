@@ -19,7 +19,7 @@ const planets = [
   { id: "YOU", name: "YOU", tagline: "the spark reading this now", color: "#8A0303" },
 ] as const;
 
-/** ------------ SUBTHEMES (요청한 정의 반영, 미정은 ???) ------------ */
+/** ------------ SUBTHEMES ------------ */
 type Subtheme = { id: string; name: string; tagline: string };
 type SubMap = Record<string, Subtheme[]>;
 
@@ -31,33 +31,14 @@ const mk = (planet: string, names: string[]): Subtheme[] =>
   }));
 
 const SUN = [
-  "IGNITION",
-  "Solar Embrace",
-  "Aureate Throne",
-  "Red March, Black Ledger",
-  "Dear Rocket Boy",
-  "Chasing Horizons",
-  "Endless Sunset",
-  "Lucid Reverie",
-  "Riff&Boogie",
-  "Let's Rock",
+  "IGNITION","Solar Embrace","Aureate Throne","Red March, Black Ledger","Dear Rocket Boy",
+  "Chasing Horizons","Endless Sunset","Lucid Reverie","Riff&Boogie","Let's Rock",
 ];
-
 const MER = [
-  "Street X",
-  "Afterglow Vacation",
-  "17:22",
-  "CASH GOD",
-  "Ugly Truth",
-  "Ten Shots",
-  "Orbit of Us",
-  "Crown Me Bitch",
-  "We Are the One",
-  "Let's Hip-hop",
+  "Street X","Afterglow Vacation","17:22","CASH GOD","Ugly Truth",
+  "Ten Shots","Orbit of Us","Crown Me Bitch","We Are the One","Let's Hip-hop",
 ];
-
-const VEN = ["Letters to Venus", "Emerald Memory", "The Starter Wife", "???", "???", "???", "???", "???", "???", "???"];
-
+const VEN = ["Letters to Venus","Emerald Memory","The Starter Wife","???","???","???","???","???","???","???"];
 const fill10 = () => Array.from({ length: 10 }, () => "???");
 
 const subthemesByPlanet: SubMap = {
@@ -77,17 +58,19 @@ const subthemesByPlanet: SubMap = {
 type PoemItem = {
   code: string;       // ELON-SUN-0008
   planet: string;     // SUN / MER ...
-  title: string;      // 노래제목 (코드 제외)
-  poem: string;       // 시(Poem)
-  subtheme: string;   // 소주제 문자열(자유 입력)
+  title: string;      // 제목 (코드 제외)
+  poem: string;       // 시(원문 그대로)
+  subtheme: string;   // 소주제 텍스트
   lyrics?: string;
   date?: string;
   tool?: string;
   note?: string;
 };
 
+type Origin = "subtheme" | "library" | "stardust" | "galaxy" | null;
+
 /** ------------ HELPERS ------------ */
-// 소주제/검색어 느슨 매칭(대소문자/공백/구두점 차이 흡수)
+// 대소문자/공백/구두점 느슨 검색 (본문 표시에는 절대 사용하지 않음)
 const norm = (s?: string) =>
   (s ?? "")
     .toLowerCase()
@@ -101,6 +84,7 @@ export default function PoemCosmos() {
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
   const [selectedSubtheme, setSelectedSubtheme] = useState<string | null>(null);
   const [selectedPoem, setSelectedPoem] = useState<PoemItem | null>(null);
+  const [origin, setOrigin] = useState<Origin>(null); // ← 출발지 기억
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
@@ -118,9 +102,7 @@ export default function PoemCosmos() {
         const j = await r.json().catch(() => ({}));
         if (!r.ok) {
           const msg = j?.error || j?.message || "Fetch failed";
-          throw new Error(
-            `${msg}${j?.url ? ` [url: ${j.url}]` : ""}${j?.step ? ` [step: ${j.step}]` : ""}`
-          );
+          throw new Error(`${msg}${j?.url ? ` [url: ${j.url}]` : ""}${j?.step ? ` [step: ${j.step}]` : ""}`);
         }
         setAllPoems((j.items || []) as PoemItem[]);
       } catch (e: any) {
@@ -142,7 +124,7 @@ export default function PoemCosmos() {
     return subthemesByPlanet[selectedPlanet].find((s) => s.id === selectedSubtheme) ?? null;
   }, [selectedPlanet, selectedSubtheme]);
 
-  // 현재 서브테마의 시 목록(실데이터 기준)
+  // 현재 서브테마의 시 목록
   const subthemePoems = useMemo(() => {
     if (!selectedPlanet) return [];
     const wantedName = norm(currentSubtheme?.name);
@@ -173,23 +155,55 @@ export default function PoemCosmos() {
     });
   }, [allPoems, search, selectedPlanet, selectedSubtheme, currentSubtheme]);
 
-  const handlePlanetClick = (planetId: string) => { setSelectedPlanet(planetId); setSelectedSubtheme(null); setView("planet"); };
-  const handleSubthemeClick = (subthemeId: string) => { setSelectedSubtheme(subthemeId); setView("subtheme"); };
-  const handlePoemClick = (poem: PoemItem) => { setSelectedPoem(poem); setView("poem"); };
+  /** --------- Handlers --------- */
+  const handlePlanetClick = (planetId: string) => {
+    setSelectedPlanet(planetId);
+    setSelectedSubtheme(null);
+    setView("planet");
+  };
+
+  const handleSubthemeClick = (subthemeId: string) => {
+    setSelectedSubtheme(subthemeId);
+    setView("subtheme");
+  };
+
+  const handlePoemClick = (poem: PoemItem, from: Origin) => {
+    setSelectedPoem(poem);
+    setSelectedPlanet(poem.planet || selectedPlanet || null);
+    setOrigin(from);
+    setView("poem");
+  };
 
   const handleBack = () => {
-    if (view === "poem") { setView("subtheme"); setSelectedPoem(null); }
-    else if (view === "subtheme") { setView("planet"); setSelectedSubtheme(null); }
-    else if (view === "planet") { setView("galaxy"); setSelectedPlanet(null); }
-    else if (view === "library") { setView("galaxy"); }
+    if (view === "poem") {
+      if (origin === "subtheme") setView("subtheme");
+      else if (origin === "library") setView("library");
+      else if (origin === "stardust") setView("galaxy");
+      else setView("galaxy");
+      setSelectedPoem(null);
+      setOrigin(null);
+      return;
+    }
+    if (view === "subtheme") {
+      setView("planet");
+      setSelectedSubtheme(null);
+      return;
+    }
+    if (view === "planet" || view === "library") {
+      setView("galaxy");
+      setSelectedPlanet(null);
+      setSelectedSubtheme(null);
+      return;
+    }
   };
 
   const handleStardustDive = () => {
     if (!allPoems.length) return;
     const rnd = allPoems[Math.floor(Math.random() * allPoems.length)];
-    setSelectedPlanet(rnd.planet);
+    setSelectedPlanet(rnd.planet || null);
     setSelectedSubtheme(null);
     setSelectedPoem(rnd);
+    setOrigin("stardust");
     setView("poem");
   };
 
@@ -228,7 +242,8 @@ export default function PoemCosmos() {
       )}
 
       {/* 본문 */}
-      <main className="relative z-30 flex items-center justify-center min-h-screen px-6" style={{ paddingTop: "72px" }}>
+      {/* ⬇️ z-index를 10으로 낮춰 네비게이션이 항상 위에 오도록 */}
+      <main className="relative z-10 flex items-center justify-center min-h-screen px-6" style={{ paddingTop: "72px" }}>
         {/* 중앙 버튼 */}
         {view === "galaxy" && (
           <div className="absolute inset-0 flex items-center justify-center text-center text-white/90 z-10 pointer-events-none">
@@ -422,7 +437,7 @@ export default function PoemCosmos() {
                         transition={{ delay: index * 0.01 }}
                         onMouseEnter={() => setHoveredItem(poem.code)}
                         onMouseLeave={() => setHoveredItem(null)}
-                        onClick={() => handlePoemClick(poem)}
+                        onClick={() => handlePoemClick(poem, "subtheme")}
                         whileHover={{ scale: 2 }}
                         whileTap={{ scale: 0.86 }}
                       >
@@ -503,7 +518,7 @@ export default function PoemCosmos() {
                 {filtered.map((poem) => (
                   <button
                     key={poem.code + poem.title}
-                    onClick={() => { setSelectedPoem(poem); setSelectedPlanet(poem.planet); setView("poem"); }}
+                    onClick={() => handlePoemClick(poem, "library")}
                     className="text-left bg-white/5 hover:bg-white/8 transition border border-white/10 rounded-2xl p-4"
                   >
                     <div className="text-xs text-white/50">
@@ -545,18 +560,23 @@ export default function PoemCosmos() {
                   backdropFilter: "blur(20px)",
                 }}
               >
+                {/* 상단 메타: 좌측 비움, 우측에 날짜 표시 */}
                 <div className="flex items-center justify-between mb-6 text-xs font-light text-cyan-100/50">
-                  <span>{selectedPoem.code}</span>
-                  <span>{selectedPoem.subtheme}</span>
+                  <span />
+                  <span>{selectedPoem.date || ""}</span>
                 </div>
+
+                {/* 큰 타이틀: CODE - TITLE (제목 없으면 CODE만) */}
                 <h3
                   className="text-3xl font-light text-center mb-8 tracking-wide"
                   style={{ color: currentPlanet.color, textShadow: `0 0 20px ${currentPlanet.color}99` }}
                 >
-                  {selectedPoem.title || "(untitled)"}
+                  {selectedPoem.code}{selectedPoem.title ? ` - ${selectedPoem.title}` : ""}
                 </h3>
+
+                {/* 본문: 원문 그대로(따옴표/말미 공백 포함) */}
                 <pre className="text-cyan-100/90 font-light text-lg leading-relaxed whitespace-pre-wrap text-center tracking-wide">
-                  {selectedPoem.poem}
+                  {selectedPoem.poem ?? ""}
                 </pre>
               </div>
             </motion.div>
