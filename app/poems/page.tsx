@@ -86,6 +86,15 @@ type PoemItem = {
   note?: string;
 };
 
+/** ------------ HELPERS ------------ */
+// 소주제/검색어 느슨 매칭(대소문자/공백/구두점 차이 흡수)
+const norm = (s?: string) =>
+  (s ?? "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[^\w\s]/g, "")
+    .trim();
+
 /** ------------ PAGE ------------ */
 export default function PoemCosmos() {
   const [view, setView] = useState<"galaxy" | "planet" | "subtheme" | "poem" | "library">("galaxy");
@@ -106,9 +115,14 @@ export default function PoemCosmos() {
       setErr(null);
       try {
         const r = await fetch("/api/poems", { cache: "no-store" });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j?.error || "Fetch failed");
-        setAllPoems(j.items as PoemItem[]);
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          const msg = j?.error || j?.message || "Fetch failed";
+          throw new Error(
+            `${msg}${j?.url ? ` [url: ${j.url}]` : ""}${j?.step ? ` [step: ${j.step}]` : ""}`
+          );
+        }
+        setAllPoems((j.items || []) as PoemItem[]);
       } catch (e: any) {
         setErr(e?.message || "Unknown error");
       } finally {
@@ -131,30 +145,30 @@ export default function PoemCosmos() {
   // 현재 서브테마의 시 목록(실데이터 기준)
   const subthemePoems = useMemo(() => {
     if (!selectedPlanet) return [];
-    // 레코드의 subtheme 문자열이 자유형이라서, 선택된 서브테마 이름과 느슨하게 매칭
-    const wantedName = currentSubtheme?.name?.toLowerCase().trim();
+    const wantedName = norm(currentSubtheme?.name);
     return allPoems.filter((p) => {
       if (p.planet !== selectedPlanet) return false;
       if (!selectedSubtheme) return true;
-      if (!wantedName) return false;
-      return (p.subtheme || "").toLowerCase().trim() === wantedName;
+      return norm(p.subtheme) === wantedName;
     });
   }, [allPoems, selectedPlanet, selectedSubtheme, currentSubtheme]);
 
   // 라이브러리 검색/필터
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = norm(search);
     return allPoems.filter((poem) => {
       if (selectedPlanet && poem.planet !== selectedPlanet) return false;
       if (selectedSubtheme) {
-        const wantedName = currentSubtheme?.name?.toLowerCase().trim();
-        if (wantedName && (poem.subtheme || "").toLowerCase().trim() !== wantedName) return false;
+        const wantedName = norm(currentSubtheme?.name);
+        if (wantedName && norm(poem.subtheme) !== wantedName) return false;
       }
       if (!q) return true;
       return (
-        poem.title?.toLowerCase().includes(q) ||
-        poem.poem?.toLowerCase().includes(q) ||
-        poem.code?.toLowerCase().includes(q)
+        norm(poem.title).includes(q) ||
+        norm(poem.poem).includes(q) ||
+        norm(poem.code).includes(q) ||
+        norm(poem.subtheme).includes(q) ||
+        norm(poem.planet).includes(q)
       );
     });
   }, [allPoems, search, selectedPlanet, selectedSubtheme, currentSubtheme]);
@@ -206,7 +220,7 @@ export default function PoemCosmos() {
           onClick={handleBack}
           className="fixed top-24 left-6 z-50 px-6 py-3 rounded-full text-sm font-light tracking-wide transition-all duration-300"
           style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.2)", color: "#e0f7ff", backdropFilter: "blur(10px)" }}
-          whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(255,255,255,0.3)" }}
+          whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(0,255,255,0.3)" }}
           whileTap={{ scale: 0.95 }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -478,7 +492,7 @@ export default function PoemCosmos() {
 
                 <input
                   type="search"
-                  placeholder="Search code / title / poem"
+                  placeholder="Search code / title / poem / planet / subtheme"
                   className="flex-1 bg-white/5 border border-white/15 rounded-xl px-3 py-2 text-sm text-white/90"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -492,7 +506,9 @@ export default function PoemCosmos() {
                     onClick={() => { setSelectedPoem(poem); setSelectedPlanet(poem.planet); setView("poem"); }}
                     className="text-left bg-white/5 hover:bg-white/8 transition border border-white/10 rounded-2xl p-4"
                   >
-                    <div className="text-xs text-white/50">{poem.code} · {poem.planet}</div>
+                    <div className="text-xs text-white/50">
+                      {poem.code} · {poem.planet}{poem.date ? ` · ${poem.date}` : ""}
+                    </div>
                     <div className="mt-1 text-white/90">{poem.title || "(untitled)"}</div>
                     <div className="mt-1 text-xs text-white/60 line-clamp-2">{poem.poem}</div>
                   </button>
@@ -533,8 +549,10 @@ export default function PoemCosmos() {
                   <span>{selectedPoem.code}</span>
                   <span>{selectedPoem.subtheme}</span>
                 </div>
-                <h3 className="text-3xl font-light text-center mb-8 tracking-wide"
-                    style={{ color: currentPlanet.color, textShadow: `0 0 20px ${currentPlanet.color}99` }}>
+                <h3
+                  className="text-3xl font-light text-center mb-8 tracking-wide"
+                  style={{ color: currentPlanet.color, textShadow: `0 0 20px ${currentPlanet.color}99` }}
+                >
                   {selectedPoem.title || "(untitled)"}
                 </h3>
                 <pre className="text-cyan-100/90 font-light text-lg leading-relaxed whitespace-pre-wrap text-center tracking-wide">
