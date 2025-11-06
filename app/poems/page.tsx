@@ -85,6 +85,13 @@ const norm = (s?: string) =>
     .replace(/\s+/g, " ")
     .replace(/[^\w\s]/g, "")
     .trim();
+// page.tsx 최상단(컴포넌트 밖). 보통 norm() 아래나 바로 위에 둬도 OK.
+// 제목 앞에 CODE + 구분자(- – — :)가 있으면 잘라내고, "CODE - 제목"을 안전하게 만들어줌
+const stripTitle = (code: string, title?: string) => {
+  const t = title ?? "";
+  return t.replace(new RegExp(`^${code}\\s*[-–—:]\\s*`, "i"), "").trim();
+};
+
 
 /** ------------ PAGE ------------ */
 export default function PoemCosmos() {
@@ -414,69 +421,83 @@ export default function PoemCosmos() {
             </motion.div>
           )}
 
-          {/* SUBTHEME */}
-          {view === "subtheme" && currentPlanet && currentSubtheme && (
+       {/* SUBTHEME */}
+{view === "subtheme" && currentPlanet && currentSubtheme && (
+  <motion.div
+    key="subtheme"
+    initial={{ opacity: 0, scale: 0.5 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.5 }}
+    transition={{ duration: 0.6 }}
+    className="relative w-full max-w-6xl h-[600px] pt-24"
+  >
+    <>
+      <h2
+        className="absolute left-1/2 -translate-x-1/2 text-4xl font-extralight text-center tracking-widest"
+        style={{ top: 8, color: currentPlanet.color, textShadow: `0 0 30px ${currentPlanet.color}99` }}
+      >
+        {currentSubtheme.name}
+      </h2>
+
+      <div className="relative w-full h-full">
+        {subthemePoems.map((poem, index) => {
+          const { x, y } = positions[index] || { x: 50, y: 50 };
+          return (
             <motion.div
-              key="subtheme"
-              initial={{ opacity: 0, scale: 0.5 }}
+              key={poem.code + index}
+              className="absolute cursor-pointer group"
+              style={{ left: `${x}%`, top: `${y}%` }}
+              initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ duration: 0.6 }}
-              className="relative w-full max-w-6xl h-[600px] pt-24"
+              transition={{ delay: index * 0.01 }}
+              onMouseEnter={() => setHoveredItem(poem.code)}
+              onMouseLeave={() => setHoveredItem(null)}
+              onClick={() => handlePoemClick(poem, "subtheme")}
+              whileHover={{ scale: 2 }}
+              whileTap={{ scale: 0.86 }}
             >
-              <>
-                <h2
-                  className="absolute left-1/2 -translate-x-1/2 text-4xl font-extralight text-center tracking-widest"
-                  style={{ top: 8, color: currentPlanet.color, textShadow: `0 0 30px ${currentPlanet.color}99` }}
-                >
-                  {currentSubtheme.name}
-                </h2>
-
-                <div className="relative w-full h-full">
-                  {subthemePoems.map((poem, index) => {
-                    const { x, y } = positions[index] || { x: 50, y: 50 };
-                    return (
-                      <motion.div
-                        key={poem.code + index}
-                        className="absolute cursor-pointer group"
-                        style={{ left: `${x}%`, top: `${y}%` }}
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.01 }}
-                        onMouseEnter={() => setHoveredItem(poem.code)}
-                        onMouseLeave={() => setHoveredItem(null)}
-                        onClick={() => handlePoemClick(poem, "subtheme")}
-                        whileHover={{ scale: 2 }}
-                        whileTap={{ scale: 0.86 }}
-                      >
-                        <div className="w-2 h-2 rounded-full" style={{ background: currentPlanet.color, boxShadow: `0 0 10px ${currentPlanet.color}99` }} />
-                        <AnimatePresence>
-                          {hoveredItem === poem.code && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 5 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 5 }}
-                              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-center pointer-events-none"
-                              style={{ zIndex: 100 }}
-                            >
-                              <div className="text-xs font-light tracking-wider" style={{ color: currentPlanet.color }}>
-                                {poem.code}
-                              </div>
-                              <div className="text-xs font-light text-cyan-100/60 mt-1 max-w-xs line-clamp-1">{poem.title}</div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-
-                <p className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-12 text-center text-cyan-100/40 text-sm font-light">
-                  {subthemePoems.length} poems in this constellation
-                </p>
-              </>
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ background: currentPlanet.color, boxShadow: `0 0 10px ${currentPlanet.color}99` }}
+              />
+              <AnimatePresence>
+                {hoveredItem === poem.code && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-center pointer-events-none"
+                    style={{ zIndex: 100 }}
+                  >
+                    {/* 위줄: 코드 */}
+                    <div
+                      className="text-xs font-light tracking-wider"
+                      style={{ color: currentPlanet.color }}
+                    >
+                      {poem.code}
+                    </div>
+                    {/* 아래줄: 코드 제거된 제목 (없으면 untitled) */}
+                    <div className="text-xs font-light text-cyan-100/60 mt-1 max-w-xs line-clamp-1">
+                      {((poem.title ?? "").replace(
+                        new RegExp(`^${poem.code}\\s*[-–—:]\\s*`, "i"),
+                        ""
+                      ).trim()) || "(untitled)"}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
-          )}
+          );
+        })}
+      </div>
+
+      <p className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-12 text-center text-cyan-100/40 text-sm font-light">
+        {subthemePoems.length} poems in this constellation
+      </p>
+    </>
+  </motion.div>
+)}
+
 
           {/* LIBRARY */}
           {view === "library" && (
