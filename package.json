@@ -8,7 +8,7 @@
     "lint": "next lint",
     "start": "next start"
   },
-  "dependencies": {
+ "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.10.0",
