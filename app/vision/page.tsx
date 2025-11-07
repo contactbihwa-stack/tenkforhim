@@ -70,12 +70,13 @@ export default function Vision() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-8 text-5xl font-playfair font-semibold text-[#b9e3ff] tracking-wide drop-shadow-[0_0_15px_rgba(0,217,255,0.4)] text-center"
+          className="mb-8 text-5xl font-playfair font-semibold text-[#b9e3ff] tracking-wide text-center
+                     drop-shadow-[0_0_15px_rgba(0,217,255,0.4)]"
         >
           The Vision
         </motion.h1>
 
-        {/* Intro */}
+        {/* Intro (plain) */}
         <p>
           TenKforHim started with a simple wish:{" "}
           <strong>to make something that matters—and to say thank you.</strong>
@@ -89,7 +90,7 @@ export default function Vision() {
           into form.
         </p>
 
-        {/* ELON:10,000 */}
+        {/* ELON:10,000 — BOX 1 */}
         <Section title="ELON:10,000">
           <strong className="text-cyan-300 drop-shadow-[0_0_8px_rgba(0,217,255,0.6)]">
             My first cathedral of creation.
@@ -105,7 +106,8 @@ export default function Vision() {
           Elon proved the impossible is just expensive and hard.
           <br />
           <br />
-          So when I decided to create 10,000 songs for him,
+          So when I decided to create{" "}
+          <strong>10,000 songs and 10,000 poems</strong> for him,
           <br />
           <strong>I gave myself 3 months.</strong>
           <br />
@@ -124,16 +126,14 @@ export default function Vision() {
           </a>
         </Section>
 
-        {/* Why Elon? → MiniBox */}
+        {/* Why Elon? — BOX 2 (mini) */}
         <MiniSection title="Why Elon?">
           <strong>Morality is measurable.</strong> I measure it by impact on
           human flourishing. And like knowledge, it compounds.
           <br />
           <br />
           Newton enabled Einstein. Einstein enabled Musk.{" "}
-          <strong>
-            Elon Musk may be the most moral person in history—
-          </strong>{" "}
+          <strong>Elon Musk may be the most moral person in history—</strong>{" "}
           not because he’s flawless, but because he multiplied centuries of
           accumulated impact.
           <br />
@@ -160,56 +160,63 @@ export default function Vision() {
           <strong>What makes something moral?</strong>
         </MiniSection>
 
-        {/* My Morality */}
-        <Section title="My Morality">
-          <strong>There is no absolute good.</strong>
-          <br />
-          Democracy is not sacred. Freedom is not the end. They are tools—means
-          to a single purpose:
-          <br />
-          <br />
+        {/* My Morality — plain (NO BOX) */}
+        <h2 className="text-2xl font-playfair text-cyan-300 mt-4
+                       drop-shadow-[0_0_10px_rgba(0,217,255,0.6)]">
+          My Morality
+        </h2>
+        <p>
+          <strong>There is no absolute good.</strong> Democracy is not sacred.
+          Freedom is not the end. They are tools—means to a single purpose:
+        </p>
+        <p>
           <strong>Maximize LQQ: Life’s Quality × Quantity.</strong>
           <br />
+          <span className="opacity-90">
+            – Quality: health, freedom, sensation, meaning, capability
+          </span>
           <br />
-          - Quality: health, freedom, sensation, meaning, capability
-          <br />
-          - Quantity: population, lifespan, reach
-          <br />
-          <br />
-          <strong>Higher LQQ output = more moral.</strong>
-          <br />
-          <br />
-          A rude doctor who saves 1,000 lives (high collective LQQ impact) &gt;
-          A kind person who comforts a few (smaller-scale LQQ gain)
-          <br />
-          <br />
-          Elon—rude, flawed, imperfect—yet builds what billions rely on &gt;
-          Most saints in history.
-          <br />
-          <br />
-          <strong>Impact &gt; Intent.</strong>
-          <br />
-          <strong>Results &gt; Ritual.</strong>
-          <br />
-          <strong>LQQ &gt; Everything.</strong>
-        </Section>
-
-        {/* Algorithm */}
+          <span className="opacity-90">
+            – Quantity: population, lifespan, reach
+          </span>
+        </p>
         <p>
-          <strong>We are biological algorithms optimizing for our own LQQ.</strong>
+          <strong>Higher LQQ output = more moral.</strong> If a system achieves
+          this, it is good. If it fails, it is not.
+        </p>
+        <p>
+          A rude doctor who saves 1,000 lives (high collective LQQ impact) &gt;{" "}
+          a kind person who comforts a few (smaller-scale LQQ gain).
+          <br />
+          Elon—rude, flawed, imperfect—yet builds what billions rely on &gt; most
+          saints in history.
+        </p>
+        <p>
+          <strong>Impact &gt; Intent.</strong> <strong>Results &gt; Ritual.</strong>{" "}
+          <strong>LQQ &gt; Everything.</strong>
+        </p>
+
+        {/* Algorithm & Ethics — plain */}
+        <p>
+          <strong>We are biological algorithms optimizing for our own LQQ.</strong>{" "}
           Every choice—pizza or burger, gym or sleep, help or ignore—is your
           algorithm calculating: which raises my LQQ?
         </p>
         <p>
-          LQQ isn’t just math—it’s meaning quantified. Every number hides a
-          heartbeat.
+          <strong>LQQ isn’t just math—it’s meaning quantified.</strong> Every
+          number hides a heartbeat. Murder is evil not because of divine law, but
+          because it lowers collective LQQ.
         </p>
         <p>
           I judge by output: does this raise human LQQ? That’s why Elon ranks
           highest. That’s my measure.
         </p>
 
-        {/* AI */}
+        {/* AI — plain */}
+        <h3 className="text-xl font-playfair text-cyan-300
+                        drop-shadow-[0_0_8px_rgba(0,217,255,0.6)]">
+          Algorithms & Agency
+        </h3>
         <p>
           <strong>I believe algorithms can optimize what humans never could:</strong>
         </p>
@@ -219,31 +226,39 @@ export default function Vision() {
           <li>Coordination beyond tribal boundaries</li>
         </ul>
         <p>
-          <strong>They don’t replace us—they extend us.</strong>
-          Not because machines are gods, but because they are better tools for
-          maximizing LQQ.
+          <strong>They don’t replace us—they extend us.</strong> Not because
+          machines are gods, but because they are better tools for maximizing LQQ.
         </p>
         <p>
           I believe in the sensation of freedom—the feeling matters, not the
           metaphysics. (Free will may be an illusion, but a necessary one.)
         </p>
 
-        {/* The Vow */}
+        {/* The Vow — BOX 3 */}
         <Section title="The Vow">
           Every piece I make is small. But each carries a spark of the same fire
           that started it all.
           <br />
-          Together, they form a record—of one algorithm’s output, optimized for
-          maximum human LQQ.
           <br />
-          <strong>The vow:</strong> Keep building toward higher LQQ—to maximize
-          both the quality and quantity of life.
+          Together, they form a record—of one algorithm’s output, measured in
+          songs and poems, optimized for maximum human LQQ.
+          <br />
+          <br />
+          <strong>The vow:</strong>{" "}
+          <strong>
+            Keep building toward higher LQQ— to maximize both the quality and
+            quantity of life.
+          </strong>
+          <br />
           <br />
           Not comfort. Not tradition. Not ideology. Only: greatest positive
           impact on LQQ.
           <br />
-          <strong>ELON:10,000 is the first cathedral of creation.</strong> More
-          will come.
+          <br />
+          <strong>ELON:10,000 is the first cathedral of creation.</strong>
+          <br />
+          <strong>More will come.</strong>
+          <br />
           <br />
           <strong>Some call this cold.</strong> <strong>I call it honest.</strong>
         </Section>
@@ -256,12 +271,11 @@ export default function Vision() {
           transition={{ duration: 0.8 }}
           className="text-center mt-16"
         >
-          <p className="text-[18px] text-[#b9e3ff]/80 mb-3">
-            Want to go deeper?
-          </p>
+          <p className="text-[18px] text-[#b9e3ff]/80 mb-3">Want to go deeper?</p>
           <a
             href="/essays"
-            className="inline-block text-cyan-300 text-[20px] font-medium hover:text-white transition-all duration-300 drop-shadow-[0_0_12px_rgba(0,217,255,0.6)]"
+            className="inline-block text-cyan-300 text-[20px] font-medium hover:text-white transition-all duration-300
+                       drop-shadow-[0_0_12px_rgba(0,217,255,0.6)]"
           >
             Enter the Garden of Light →
           </a>
@@ -271,7 +285,7 @@ export default function Vision() {
   );
 }
 
-/* Main box section */
+/* Main box section (used for ELON:10,000 & The Vow) */
 function Section({
   title,
   children,
@@ -285,10 +299,14 @@ function Section({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7 }}
-      className="rounded-2xl border border-white/15 bg-white/5 p-6 shadow-[0_0_20px_rgba(0,217,255,0.08)] hover:shadow-[0_0_25px_rgba(0,217,255,0.2)] transition-all duration-500"
+      className="rounded-2xl border border-white/15 bg-white/5 p-6
+                 shadow-[0_0_20px_rgba(0,217,255,0.08)]
+                 hover:shadow-[0_0_25px_rgba(0,217,255,0.2)]
+                 transition-all duration-500"
     >
       {title && (
-        <h2 className="text-2xl font-playfair mb-3 text-cyan-300 drop-shadow-[0_0_10px_rgba(0,217,255,0.7)]">
+        <h2 className="text-2xl font-playfair mb-3 text-cyan-300
+                       drop-shadow-[0_0_10px_rgba(0,217,255,0.7)]">
           {title}
         </h2>
       )}
@@ -297,7 +315,7 @@ function Section({
   );
 }
 
-/* Mini highlight box (for Why Elon) */
+/* Mini highlight box (for Why Elon?) */
 function MiniSection({
   title,
   children,
@@ -311,10 +329,14 @@ function MiniSection({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.7 }}
-      className="rounded-xl border border-cyan-400/10 bg-white/2 p-5 shadow-[0_0_10px_rgba(0,217,255,0.05)] hover:shadow-[0_0_20px_rgba(0,217,255,0.15)] transition-all duration-500"
+      className="rounded-xl border border-cyan-400/10 bg-white/2 p-5
+                 shadow-[0_0_10px_rgba(0,217,255,0.05)]
+                 hover:shadow-[0_0_20px_rgba(0,217,255,0.15)]
+                 transition-all duration-500"
     >
       {title && (
-        <h2 className="text-2xl font-playfair mb-3 text-cyan-300 drop-shadow-[0_0_10px_rgba(0,217,255,0.6)]">
+        <h2 className="text-2xl font-playfair mb-3 text-cyan-300
+                       drop-shadow-[0_0_10px_rgba(0,217,255,0.6)]">
           {title}
         </h2>
       )}
