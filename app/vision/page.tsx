@@ -75,7 +75,7 @@ export default function Vision() {
           The Vision
         </motion.h1>
 
-        {/* Section 1: Intro */}
+        {/* Intro */}
         <p>
           TenKforHim started with a simple wish:{" "}
           <strong>to make something that matters—and to say thank you.</strong>
@@ -89,7 +89,7 @@ export default function Vision() {
           into form.
         </p>
 
-        {/* Section 2: ELON:10,000 (BOX) */}
+        {/* ELON:10,000 */}
         <Section title="ELON:10,000">
           <strong className="text-cyan-300 drop-shadow-[0_0_8px_rgba(0,217,255,0.6)]">
             My first cathedral of creation.
@@ -124,30 +124,32 @@ export default function Vision() {
           </a>
         </Section>
 
-        {/* Section 3: Why Elon (PLAIN) */}
-        <p>
+        {/* Why Elon? → MiniBox */}
+        <MiniSection title="Why Elon?">
           <strong>Morality is measurable.</strong> I measure it by impact on
           human flourishing. And like knowledge, it compounds.
-        </p>
-        <p>
+          <br />
+          <br />
           Newton enabled Einstein. Einstein enabled Musk.{" "}
           <strong>
             Elon Musk may be the most moral person in history—
           </strong>{" "}
           not because he’s flawless, but because he multiplied centuries of
           accumulated impact.
-        </p>
-        <ul className="list-disc pl-6 mt-2 space-y-1">
-          <li>Sustainable energy (climate survival)</li>
-          <li>Reusable rockets (planetary backup)</li>
-          <li>Brain-computer interfaces (human augmentation)</li>
-          <li>AI infrastructure (next leap)</li>
-          <li>
-            Autonomous transport, manufacturing, and communication systems still
-            unfolding.
-          </li>
-        </ul>
-        <p>
+          <br />
+          <br />
+          He’s using that inheritance to build what raises collective LQQ most:
+          <ul className="list-disc pl-6 mt-2 space-y-1">
+            <li>Sustainable energy (climate survival)</li>
+            <li>Reusable rockets (planetary backup)</li>
+            <li>Brain-computer interfaces (human augmentation)</li>
+            <li>AI infrastructure (next leap)</li>
+            <li>
+              Autonomous transport, manufacturing, and communication systems still
+              unfolding.
+            </li>
+          </ul>
+          <br />
           <strong>Some call it worship.</strong>
           <br />
           <strong>I call it arithmetic.</strong>
@@ -156,9 +158,9 @@ export default function Vision() {
           <strong>But what’s my measure?</strong>
           <br />
           <strong>What makes something moral?</strong>
-        </p>
+        </MiniSection>
 
-        {/* Section 4: My Morality (BOX) */}
+        {/* My Morality */}
         <Section title="My Morality">
           <strong>There is no absolute good.</strong>
           <br />
@@ -192,7 +194,7 @@ export default function Vision() {
           <strong>LQQ &gt; Everything.</strong>
         </Section>
 
-        {/* Section 5: Algorithm (PLAIN) */}
+        {/* Algorithm */}
         <p>
           <strong>We are biological algorithms optimizing for our own LQQ.</strong>
           Every choice—pizza or burger, gym or sleep, help or ignore—is your
@@ -207,7 +209,7 @@ export default function Vision() {
           highest. That’s my measure.
         </p>
 
-        {/* Section 6: AI (PLAIN) */}
+        {/* AI */}
         <p>
           <strong>I believe algorithms can optimize what humans never could:</strong>
         </p>
@@ -226,7 +228,7 @@ export default function Vision() {
           metaphysics. (Free will may be an illusion, but a necessary one.)
         </p>
 
-        {/* Section 7: The Vow (BOX) */}
+        {/* The Vow */}
         <Section title="The Vow">
           Every piece I make is small. But each carries a spark of the same fire
           that started it all.
@@ -269,7 +271,7 @@ export default function Vision() {
   );
 }
 
-/* Section 컴포넌트 (박스 강조 전용) */
+/* Main box section */
 function Section({
   title,
   children,
@@ -287,6 +289,32 @@ function Section({
     >
       {title && (
         <h2 className="text-2xl font-playfair mb-3 text-cyan-300 drop-shadow-[0_0_10px_rgba(0,217,255,0.7)]">
+          {title}
+        </h2>
+      )}
+      <div className="text-[19px] leading-[1.75]">{children}</div>
+    </motion.div>
+  );
+}
+
+/* Mini highlight box (for Why Elon) */
+function MiniSection({
+  title,
+  children,
+}: {
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7 }}
+      className="rounded-xl border border-cyan-400/10 bg-white/2 p-5 shadow-[0_0_10px_rgba(0,217,255,0.05)] hover:shadow-[0_0_20px_rgba(0,217,255,0.15)] transition-all duration-500"
+    >
+      {title && (
+        <h2 className="text-2xl font-playfair mb-3 text-cyan-300 drop-shadow-[0_0_10px_rgba(0,217,255,0.6)]">
           {title}
         </h2>
       )}
