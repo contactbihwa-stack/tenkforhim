@@ -70,7 +70,7 @@ export default function LogbookPage() {
           <div className="flex justify-between items-start mb-3">
             <div>
               <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
-                LOGBOOK 001 — NOV 12 → NOV 22, 2025
+                LOGBOOK 001 — NOV 13 → NOV 22, 2025
               </p>
               <h2 className="text-xl font-semibold text-cyan-100">Logbook 001</h2>
             </div>
