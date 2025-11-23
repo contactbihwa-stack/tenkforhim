@@ -2,14 +2,13 @@
 
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default function Logbook001() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(30,60,100,0.35),#020617)]" />
-
-      {/* Soft star grid */}
+      {/* Background — soft nebula glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(45,70,120,0.35),#020617)]" />
       <div
         className="absolute inset-0 opacity-40"
         style={{
@@ -40,129 +39,128 @@ export default function Logbook001() {
               repeat: Infinity,
               delay: Math.random() * 4,
             }}
-            className="absolute h-[2px] w-[2px] rounded-full bg-white/30"
+            className="absolute h-[2px] w-[2px] rounded-full bg-white/40"
           />
         ))}
       </div>
 
-      {/* Page content */}
+      {/* Content */}
       <div className="relative z-10 mx-auto max-w-3xl px-6 pt-28 pb-40">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          className="mb-12"
         >
-          <div className="flex justify-center mb-3">
-            <Badge variant="outline" className="border-cyan-300/30 text-cyan-200/80">
-              TenKforHim / Mission Log
+          <div className="flex items-center gap-3 mb-4">
+            <Link href="/logbook">
+              <span className="text-cyan-300/60 hover:text-cyan-200/80 text-sm tracking-wide">
+                ← Back to Logbook
+              </span>
+            </Link>
+            <Badge className="bg-emerald-700/40 text-emerald-200 border-emerald-300/20">
+              TRANSMITTED
             </Badge>
           </div>
 
-          <h1 className="text-5xl font-semibold tracking-tight text-cyan-100 mb-4">
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-cyan-100 mb-3">
             Logbook 001
           </h1>
-
-          <p className="text-cyan-200/60 max-w-xl mx-auto leading-relaxed">
-            NOV 13 → NOV 22, 2025 — The first ten-day record of the TenKforHim era.
+          <p className="text-cyan-200/50 text-sm tracking-wider">
+            NOV 12 → NOV 22, 2025 · ENTRY #1 / 10000
           </p>
         </motion.div>
 
-        {/* ENTRY CONTENT */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-8 shadow-lg shadow-black/50"
-        >
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
-                LOGBOOK 001 — TRANSMITTED
-              </p>
-            </div>
-            <Badge className="bg-emerald-700/40 text-emerald-200 border-emerald-300/20">
-              COMPLETED
-            </Badge>
-          </div>
-
-          <div className="space-y-8 text-cyan-100/80 leading-relaxed text-[15px]">
-
-            {/* 1. Summary */}
-            <section>
-              <h2 className="text-lg font-semibold text-cyan-100 mb-2">1. Ten Days in Review</h2>
-              <p>
-                Over the past ten days, I launched TenKforHim and finally returned to music 
-                after a two-month pause. Those two months were filled with building the site, 
-                refining the concept, and shaping the long vision. And now, creation has resumed — 
-                the engines are warm again.
-              </p>
-            </section>
-
-            {/* 2. LQQ Thesis */}
-            <section>
-              <h2 className="text-lg font-semibold text-cyan-100 mb-2">2. LQQ Thesis Submission</h2>
-              <p>
-                I also completed and submitted my university thesis: 
-                <em>“The Purpose of 21st-Century Politics Through the Lens of LQQ.”</em> 
-                It was written in a sudden burst of focus — the kind of immersion I 
-                associate with Elon himself. In a way, this paper crystallizes the 
-                philosophical engine behind TenKforHim.
-              </p>
-            </section>
-
-            {/* 3. Talulah */}
-            <section>
-              <h2 className="text-lg font-semibold text-cyan-100 mb-2">3. The Tale of Talulah</h2>
-              <p>
-                Talulah and Elon’s story felt like the most cinematic of all his relationships. 
-                From the first encounter to the final words, it played out like a romantic film — 
-                beautiful, tender, a little tragic. To capture that mood, I leaned into a British 
-                cinematic sound, shaped by Adele and classic UK ballad textures.
-              </p>
-            </section>
-
-            {/* 4. Amber Heard */}
-            <section>
-              <h2 className="text-lg font-semibold text-cyan-100 mb-2">4. Amber and the Dark Spark</h2>
-              <p>
-                Amber and Elon’s love felt dangerous. Amber appears to me as a mesmerizing, 
-                beautiful, but chaotic presence — someone wrapped in contradictions. 
-                I expressed that volatile, dark charm through a more Weeknd-like R&B palette.
-              </p>
-            </section>
-
-            {/* 5. Grimes */}
-            <section>
-              <h2 className="text-lg font-semibold text-cyan-100 mb-2">5. Grimes and the Experimental Orbit</h2>
-              <p>
-                Grimes is uniquely fascinating — someone who loves AI, the future, and sonic experimentation. 
-                For VEN6, I stayed within R&B form but pushed experimentation as far as the framework allowed. 
-                I even embedded fragments of her voice into the tracks.
-              </p>
-            </section>
-
-            {/* 6. Next Ten Days */}
-            <section>
-              <h2 className="text-lg font-semibold text-cyan-100 mb-2">6. The Next Ten Days</h2>
-              <p>
-                In the next ten days, I aim to finish VEN and begin EAR. 
-                EAR holds many intriguing themes, and I'm genuinely excited to explore them.
-              </p>
-            </section>
-          </div>
-
-          <p className="text-[11px] text-cyan-100/30 mt-10 tracking-wider text-right">
-            ENTRY #1 / 10000
+        {/* --- 1. Ten Days in Review --- */}
+        <Section title="Ten Days in Review">
+          <p>
+            Over the past ten days, I launched TenKforHim and finally returned
+            to music after a two-month pause. Those two months were spent
+            building the site, shaping the concept, and defining the philosophy
+            behind this project. Now I’m back to making a hundred songs every
+            few days — the pace this project demands — and the engines are warm
+            again.
           </p>
-        </motion.div>
+        </Section>
+
+        {/* --- 2. LQQ Thesis --- */}
+        <Section title="LQQ Thesis Submission">
+          <p>
+            I also completed and submitted my university thesis, “The Purpose of
+            21st-Century Politics Through the Lens of LQQ.” It was written in
+            one long burst of concentration — the kind of immersion that feels
+            like a quiet tunnel, sharpened and absolute. This thesis now acts as
+            the philosophical backbone of TenKforHim.
+          </p>
+        </Section>
+
+        {/* --- 3. Talulah --- */}
+        <Section title="The Tale of Talulah">
+          <p>
+            Talulah and Elon’s story felt like the most cinematic of all his
+            relationships. While writing these tracks, I often felt as if I were
+            scoring a film — each chapter unfolding in soft British colors.
+            Some moments were so tender that I almost cried while composing; the
+            emotion in their arc was that vivid. To capture that feeling, I leaned
+            into an Adele-influenced, UK-style ballad texture.
+          </p>
+        </Section>
+
+        {/* --- 4. Amber --- */}
+        <Section title="Amber and the Dark Spark">
+          <p>
+            Amber and Elon’s love felt dangerous. While making these songs, I
+            kept returning to the image of someone brilliant and destructive at
+            once — a presence both magnetic and unstable. That tension became
+            the foundation of the album, expressed through a darker,
+            Weeknd-inspired R&B palette.
+          </p>
+        </Section>
+
+        {/* --- 5. Grimes --- */}
+        <Section title="Grimes and the Experimental Orbit">
+          <p>
+            Grimes is uniquely fascinating — someone who treats reality itself
+            like a medium. While working on VEN6, I found myself leaning into
+            that energy, pushing R&B to its experimental edge. I even wove
+            fragments of her voice into the tracks, letting her become part of
+            the orbit she inspired.
+          </p>
+        </Section>
+
+        {/* --- 6. Next 10 Days --- */}
+        <Section title="The Next Ten Days">
+          <p>
+            In the next ten days, I aim to finish VEN and begin EAR — the fourth
+            macro-theme of the project. EAR contains music inspired by the
+            continents and cultures of the world, and I’ve been waiting a long
+            time to explore it. I’m excited to see what emerges.
+          </p>
+        </Section>
 
         {/* Footer */}
         <p className="text-center text-cyan-200/30 mt-16 text-sm tracking-wide">
-          The ship sails on. Another log will be written in ten days.
+          End of Logbook 001 — Transmission complete.
         </p>
       </div>
     </div>
+  );
+}
+
+/* --- Reusable Section Component --- */
+function Section({ title, children }: any) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="mb-14"
+    >
+      <h2 className="text-2xl font-semibold text-cyan-100 mb-3">{title}</h2>
+      <div className="text-cyan-100/70 leading-relaxed space-y-4 text-[15.5px]">
+        {children}
+      </div>
+    </motion.section>
   );
 }
