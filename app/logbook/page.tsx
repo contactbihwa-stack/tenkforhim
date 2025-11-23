@@ -69,7 +69,7 @@ export default function LogbookPage() {
           </p>
         </motion.div>
 
-        {/* Logbook 001 — now clickable */}
+        {/* Logbook 001 — clickable */}
         <Link href="/logbook/001" className="block group">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -90,10 +90,12 @@ export default function LogbookPage() {
                 TRANSMITTED
               </Badge>
             </div>
+
+            {/* UPDATED SUMMARY */}
             <p className="text-cyan-100/70 leading-relaxed">
-              A week of LQQ thesis completion, the Talulah album arc, and new
-              Venus-based imagery.
+              Ten days of launching TenKforHim, completing the LQQ thesis, and creating the Talulah, Amber, and Grimes albums.
             </p>
+
             <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
               #1 / 10000
             </p>
