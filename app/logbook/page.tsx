@@ -46,6 +46,7 @@ export default function LogbookPage() {
 
       {/* Page content */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 pt-28 pb-40">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -80,7 +81,7 @@ export default function LogbookPage() {
             <div className="flex justify-between items-start mb-3">
               <div>
                 <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
-                  LOGBOOK 001 — NOV 12 → NOV 22, 2025
+                  LOGBOOK 001 — NOV 12 → NOV 21, 2025
                 </p>
                 <h2 className="text-xl font-semibold text-cyan-100">
                   Logbook 001
@@ -91,9 +92,9 @@ export default function LogbookPage() {
               </Badge>
             </div>
 
-            {/* UPDATED SUMMARY */}
             <p className="text-cyan-100/70 leading-relaxed">
-              Ten days of launching TenKforHim, completing the LQQ thesis, and creating the Talulah, Amber, and Grimes albums.
+              Ten days of launching TenKforHim, finishing the LQQ thesis, and
+              building the Talulah, Amber, and Grimes arcs into orbit.
             </p>
 
             <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
@@ -103,16 +104,17 @@ export default function LogbookPage() {
         </Link>
 
         {/* Logbook 002 */}
+        <Link href="/logbook/002" className="block group">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
+          className="mb-8 rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
         >
           <div className="flex justify-between items-start mb-3">
             <div>
               <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
-                LOGBOOK 002 — COMING SOON
+                LOGBOOK 002 — NOV 22 → DEC 1, 2025
               </p>
               <h2 className="text-xl font-semibold text-cyan-100">
                 Logbook 002
@@ -123,10 +125,69 @@ export default function LogbookPage() {
             </Badge>
           </div>
           <p className="text-cyan-100/70 leading-relaxed">
-            Next 10-day record will appear here.
+            The second 10-day window, tracking the consolidation after launch —
+            more songs, more systems, more proof of work.
           </p>
           <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
             #2 / 10000
+          </p>
+        </motion.div>
+
+        {/* Logbook 003 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-8 rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
+        >
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
+                LOGBOOK 003 — DEC 12 → DEC 21, 2025
+              </p>
+              <h2 className="text-xl font-semibold text-cyan-100">
+                Logbook 003
+              </h2>
+            </div>
+            <Badge className="bg-yellow-700/40 text-yellow-200 border-yellow-300/20">
+              STANDBY
+            </Badge>
+          </div>
+          <p className="text-cyan-100/70 leading-relaxed">
+            Reserved for the third burst of work — ten more days of silent
+            grind, new planets sketched, and systems hardened.
+          </p>
+          <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
+            #3 / 10000
+          </p>
+        </motion.div>
+
+        {/* Logbook 004 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
+        >
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
+                LOGBOOK 004 — DEC 22 → DEC 31, 2025
+              </p>
+              <h2 className="text-xl font-semibold text-cyan-100">
+                Logbook 004
+              </h2>
+            </div>
+            <Badge className="bg-yellow-700/40 text-yellow-200 border-yellow-300/20">
+              STANDBY
+            </Badge>
+          </div>
+          <p className="text-cyan-100/70 leading-relaxed">
+            Closing the year with one more 10-day span — a quiet count of how
+            far the ship has flown since Logbook 001.
+          </p>
+          <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
+            #4 / 10000
           </p>
         </motion.div>
 
