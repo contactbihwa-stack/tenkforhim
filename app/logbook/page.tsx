@@ -93,8 +93,9 @@ export default function LogbookPage() {
             </div>
 
             <p className="text-cyan-100/70 leading-relaxed">
-              Ten days of launching TenKforHim, finishing the LQQ thesis, and
-              building the Talulah, Amber, and Grimes arcs into orbit.
+              Ten days of launching TenKforHim, returning to music after a
+              two-month pause, finishing the LQQ thesis, and building the
+              Talulah, Amber, and Grimes arcs.
             </p>
 
             <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
@@ -103,35 +104,37 @@ export default function LogbookPage() {
           </motion.div>
         </Link>
 
-        {/* Logbook 002 */}
+        {/* Logbook 002 — clickable */}
         <Link href="/logbook/002" className="block group">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8 rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
-        >
-          <div className="flex justify-between items-start mb-3">
-            <div>
-              <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
-                LOGBOOK 002 — NOV 22 → DEC 1, 2025
-              </p>
-              <h2 className="text-xl font-semibold text-cyan-100">
-                Logbook 002
-              </h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-8 rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50 transition-colors group-hover:bg-black/30 cursor-pointer"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
+                  LOGBOOK 002 — NOV 22 → DEC 1, 2025
+                </p>
+                <h2 className="text-xl font-semibold text-cyan-100">
+                  Logbook 002
+                </h2>
+              </div>
+              <Badge className="bg-emerald-700/40 text-emerald-200 border-emerald-300/20">
+                TRANSMITTED
+              </Badge>
             </div>
-            <Badge className="bg-yellow-700/40 text-yellow-200 border-yellow-300/20">
-              STANDBY
-            </Badge>
-          </div>
-          <p className="text-cyan-100/70 leading-relaxed">
-            The second 10-day window, tracking the consolidation after launch —
-            more songs, more systems, more proof of work.
-          </p>
-          <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
-            #2 / 10000
-          </p>
-        </motion.div>
+            <p className="text-cyan-100/70 leading-relaxed">
+              Ten days of moving to “Mars,” releasing the first official SUN
+              album, filling gaps in VEN and EAR, and realizing that half a
+              million plays can still feel strangely quiet.
+            </p>
+            <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
+              #2 / 10000
+            </p>
+          </motion.div>
+        </Link>
 
         {/* Logbook 003 */}
         <motion.div
@@ -200,3 +203,4 @@ export default function LogbookPage() {
     </div>
   );
 }
+
