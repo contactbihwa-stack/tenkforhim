@@ -68,7 +68,7 @@ export default function Logbook001() {
             Logbook 001
           </h1>
           <p className="text-cyan-200/50 text-sm tracking-wider">
-            NOV 12 → NOV 22, 2025 · ENTRY #1 / 10000
+            NOV 12 → NOV 21, 2025 · ENTRY #1 / 10000
           </p>
         </motion.div>
 
