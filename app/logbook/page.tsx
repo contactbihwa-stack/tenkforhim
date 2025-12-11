@@ -136,46 +136,50 @@ export default function LogbookPage() {
           </motion.div>
         </Link>
 
-        {/* Logbook 003 */}
+        {/* Logbook 003 — clickable */}
+        <Link href="/logbook/003" className="block group">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-8 rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50 transition-colors group-hover:bg-black/30 cursor-pointer"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
+                  LOGBOOK 003 — DEC 2 → DEC 11, 2025
+                </p>
+                <h2 className="text-xl font-semibold text-cyan-100">
+                  Logbook 003
+                </h2>
+              </div>
+              <Badge className="bg-emerald-700/40 text-emerald-200 border-emerald-300/20">
+                TRANSMITTED
+              </Badge>
+            </div>
+            <p className="text-cyan-100/70 leading-relaxed">
+              Ten days of reopening the Ani and Mika orbits, completing VEN,
+              finishing EAR’s first continent up to Motherland, and sending
+              “Elevator Eyes” and a new Zhuangzi–Elon essay out into the public
+              record.
+            </p>
+            <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
+              #3 / 10000
+            </p>
+          </motion.div>
+        </Link>
+
+        {/* Logbook 004 — standby */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
           className="mb-8 rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
         >
           <div className="flex justify-between items-start mb-3">
             <div>
               <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
-                LOGBOOK 003 — DEC 12 → DEC 21, 2025
-              </p>
-              <h2 className="text-xl font-semibold text-cyan-100">
-                Logbook 003
-              </h2>
-            </div>
-            <Badge className="bg-yellow-700/40 text-yellow-200 border-yellow-300/20">
-              STANDBY
-            </Badge>
-          </div>
-          <p className="text-cyan-100/70 leading-relaxed">
-            Reserved for the third burst of work — ten more days of silent
-            grind, new planets sketched, and systems hardened.
-          </p>
-          <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
-            #3 / 10000
-          </p>
-        </motion.div>
-
-        {/* Logbook 004 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
-        >
-          <div className="flex justify-between items-start mb-3">
-            <div>
-              <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
-                LOGBOOK 004 — DEC 22 → DEC 31, 2025
+                LOGBOOK 004 — DEC 12 → DEC 21, 2025
               </p>
               <h2 className="text-xl font-semibold text-cyan-100">
                 Logbook 004
@@ -186,11 +190,70 @@ export default function LogbookPage() {
             </Badge>
           </div>
           <p className="text-cyan-100/70 leading-relaxed">
-            Closing the year with one more 10-day span — a quiet count of how
-            far the ship has flown since Logbook 001.
+            Reserved for the next EAR-focused orbit — ten days of drawing more
+            of Earth&apos;s continents while the first VEN flagship tracks begin
+            to launch on streaming platforms.
           </p>
           <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
             #4 / 10000
+          </p>
+        </motion.div>
+
+        {/* Logbook 005 — standby */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mb-8 rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
+        >
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
+                LOGBOOK 005 — DEC 22 → DEC 31, 2025
+              </p>
+              <h2 className="text-xl font-semibold text-cyan-100">
+                Logbook 005
+              </h2>
+            </div>
+            <Badge className="bg-yellow-700/40 text-yellow-200 border-yellow-300/20">
+              STANDBY
+            </Badge>
+          </div>
+          <p className="text-cyan-100/70 leading-relaxed">
+            Closing out the year — a final ten-day sprint of 2025 to measure
+            how far TenKforHim has traveled since its first transmission.
+          </p>
+          <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
+            #5 / 10000
+          </p>
+        </motion.div>
+
+        {/* Logbook 006 — standby */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="rounded-xl border border-white/5 bg-black/20 backdrop-blur-sm p-7 shadow-lg shadow-black/50"
+        >
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <p className="text-xs tracking-widest text-cyan-200/40 mb-1">
+                LOGBOOK 006 — JAN 1 → JAN 10, 2026
+              </p>
+              <h2 className="text-xl font-semibold text-cyan-100">
+                Logbook 006
+              </h2>
+            </div>
+            <Badge className="bg-yellow-700/40 text-yellow-200 border-yellow-300/20">
+              STANDBY
+            </Badge>
+          </div>
+          <p className="text-cyan-100/70 leading-relaxed">
+            First orbit of the new year — a clean slate to push the ship&apos;s
+            speed, structure, and signal further than in 2025.
+          </p>
+          <p className="text-[10px] text-cyan-100/30 mt-4 tracking-wider">
+            #6 / 10000
           </p>
         </motion.div>
 
@@ -203,4 +266,3 @@ export default function LogbookPage() {
     </div>
   );
 }
-
