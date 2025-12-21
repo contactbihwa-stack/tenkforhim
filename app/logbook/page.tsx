@@ -1,13 +1,35 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 export default function LogbookPage() {
+  const dust = useMemo(() => {
+    return Array.from({ length: 40 }, (_, i) => {
+      const r = mulberry32(i + 1);
+      const x0 = r() * 800 - 400;
+      const y0 = r() * 800 - 400;
+      const duration = 6 + r() * 6;
+      const delay = r() * 4;
+      const dx = 40 + r() * 30;
+      const dy = 60 + r() * 30;
+      return { i, x0, y0, duration, delay, dx, dy };
+    });
+  }, []);
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Background — soft star grid + faint stardust */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(30,60,100,0.35),#020617)]" />
       <div
         className="absolute inset-0 opacity-40"
@@ -21,23 +43,21 @@ export default function LogbookPage() {
 
       {/* Floating stardust */}
       <div className="pointer-events-none absolute inset-0">
-        {[...Array(40)].map((_, i) => (
+        {dust.map((d) => (
           <motion.div
-            key={i}
-            initial={{
-              opacity: 0,
-              x: Math.random() * 800 - 400,
-              y: Math.random() * 800 - 400,
-            }}
+            key={d.i}
+            initial={{ opacity: 0, x: d.x0, y: d.y0 }}
             animate={{
               opacity: [0, 1, 0],
-              x: "+=40",
-              y: "+=60",
+              x: [d.x0, d.x0 + d.dx],
+              y: [d.y0, d.y0 + d.dy],
             }}
             transition={{
-              duration: 6 + Math.random() * 6,
+              duration: d.duration,
               repeat: Infinity,
-              delay: Math.random() * 4,
+              repeatType: "loop",
+              delay: d.delay,
+              ease: "linear",
             }}
             className="absolute h-[2px] w-[2px] rounded-full bg-white/30"
           />
